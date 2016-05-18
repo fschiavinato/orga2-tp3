@@ -54,19 +54,27 @@ start:
     
     ; Saltar a modo protegido
     jmp 0x18:modo_protegido
+
+BITS 32
     modo_protegido:
 
     ; Establecer selectores de segmentos
     mov eax, 0x20
     mov ds, eax
+    mov es, eax
+    mov fs, eax
+    mov gs, eax
     mov ss, eax
 
     ; Establecer la base de la pila
+    mov ebp, 0x27000
     mov esp, 0x27000
     
     ; Imprimir mensaje de bienvenida
+    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
     ; Inicializar pantalla
+    call inicializar_pantalla
     
     ; Inicializar el manejador de memoria
  
@@ -105,3 +113,19 @@ start:
 ;; -------------------------------------------------------------------------- ;;
 
 %include "a20.asm"
+
+BITS 32
+inicializar_pantalla:
+    push ds
+    mov eax, 0x40 ; IDX_VIDEO_DESC = 8 => 8*8 = 0x40
+    mov ds, eax
+    mov ecx, 80*50
+    mov eax, 0x00
+.loop:
+    mov byte [eax], ' ' ; Guardamos un espacio.
+    inc eax
+    mov byte [eax], 01110000b ; 0111 = grey sin bright, 0000 = black sin bright
+    inc eax
+    loop .loop
+    pop ds
+    ret
