@@ -25,6 +25,66 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
+    [GDT_IDX_KERNEL_CODE_DESC] = (gdt_entry) {
+        (unsigned short)    0x6E00,         /* limit[0:15]  */
+        (unsigned short)    0x0000,         /* base[0:15]   */
+        (unsigned char)     0x00,           /* base[23:16]  */
+        (unsigned char)     0x0A,           /* type         */ // BANANA!
+        (unsigned char)     0x01,           /* s            */
+        (unsigned char)     0x00,           /* dpl          */
+        (unsigned char)     0x01,           /* p            */ // BANANA!
+        (unsigned char)     0x03,           /* limit[16:19] */
+        (unsigned char)     0x01,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x01,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
+    [GDT_IDX_KERNEL_DATA_DESC] = (gdt_entry) {
+        (unsigned short)    0x6E00,         /* limit[0:15]  */
+        (unsigned short)    0x0000,         /* base[0:15]   */
+        (unsigned char)     0x00,           /* base[23:16]  */
+        (unsigned char)     0x02,           /* type         */ // BANANA!
+        (unsigned char)     0x01,           /* s            */
+        (unsigned char)     0x00,           /* dpl          */
+        (unsigned char)     0x01,           /* p            */ // BANANA!
+        (unsigned char)     0x03,           /* limit[16:19] */
+        (unsigned char)     0x01,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x01,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
+    [GDT_IDX_USER_CODE_DESC] = (gdt_entry) {
+        (unsigned short)    0x6E00,         /* limit[0:15]  */
+        (unsigned short)    0x0000,         /* base[0:15]   */
+        (unsigned char)     0x00,           /* base[23:16]  */
+        (unsigned char)     0x0A,           /* type         */ // BANANA!
+        (unsigned char)     0x01,           /* s            */
+        (unsigned char)     0x03,           /* dpl          */
+        (unsigned char)     0x01,           /* p            */ // BANANA!
+        (unsigned char)     0x03,           /* limit[16:19] */
+        (unsigned char)     0x01,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x01,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
+    [GDT_IDX_USER_DATA_DESC] = (gdt_entry) {
+        (unsigned short)    0x6E00,         /* limit[0:15]  */
+        (unsigned short)    0x0000,         /* base[0:15]   */
+        (unsigned char)     0x00,           /* base[23:16]  */
+        (unsigned char)     0x02,           /* type         */ // BANANA!
+        (unsigned char)     0x01,           /* s            */
+        (unsigned char)     0x03,           /* dpl          */
+        (unsigned char)     0x01,           /* p            */ // BANANA!
+        (unsigned char)     0x03,           /* limit[16:19] */
+        (unsigned char)     0x01,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x01,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
     
 };
 
