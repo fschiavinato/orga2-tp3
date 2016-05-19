@@ -85,21 +85,6 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     SEG_GRAN_4K,        /* g            */
         (unsigned char)     0x00,               /* base[31:24]  */
     },
-    [GDT_IDX_TSS_DESC] = (gdt_entry) {
-        (unsigned short)    0x00,               /* limit[0:15]  */
-        (unsigned short)    0x00,               /* base[0:15]   */
-        (unsigned char)     0x00,               /* base[23:16]  */
-        (unsigned char)     SEG_TASK_NONBUSY,   /* type         */ // BANANA!
-        (unsigned char)     SEG_TYPE_SYSTEM,    /* s            */
-        (unsigned char)     SEG_PRIV0,          /* dpl          */
-        (unsigned char)     SEG_PRES,           /* p            */
-        (unsigned char)     0x00,               /* limit[16:19] */
-        (unsigned char)     SEG_AVL,            /* avl          */
-        (unsigned char)     !SEG_IA32E,         /* l            */
-        (unsigned char)     SEG_MOD_32b,        /* db           */
-        (unsigned char)     SEG_GRAN_1B,        /* g            */
-        (unsigned char)     0x00,               /* base[31:24]  */
-    },
     [GDT_IDX_VIDEO_DESC] = (gdt_entry) {
         (unsigned short)    0x1F3F,             /* limit[0:15]  */ // 80*25*2 = 0x1F40
         (unsigned short)    0x8000,             /* base[0:15]   */
