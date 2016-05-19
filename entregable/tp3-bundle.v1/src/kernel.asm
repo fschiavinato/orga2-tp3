@@ -7,6 +7,9 @@
 
 global start
 extern GDT_DESC
+extern idt_inicializar
+extern IDT_DESC
+extern deshabilitar_pic
 
 ;; Saltear seccion de datos
 jmp start
@@ -91,8 +94,13 @@ BITS 32
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
+    call idt_inicializar
+    call deshabilitar_pic
     
     ; Cargar IDT
+
+    lidt [IDT_DESC]
+    sti
  
     ; Configurar controlador de interrupciones
 

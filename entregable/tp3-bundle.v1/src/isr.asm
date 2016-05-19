@@ -25,7 +25,7 @@ extern sched_proximo_indice
 global _isr%1
 
 _isr%1:
-    mov eax, %1
+    imprimir_texto_mp isr%1_msg, isr%1_len, 0x07, 0, 0
     jmp $
 
 %endmacro
@@ -37,10 +37,89 @@ _isr%1:
 isrnumero:           dd 0x00000000
 isrClock:            db '|/-\'
 
+isr0_msg:   db 'Divide Error'
+isr0_len:   equ $ - isr0_msg
+
+isr1_msg:   db 'Debug Exception'
+isr1_len:   equ $ - isr1_msg
+
+isr2_msg:   db 'NMI Interrupt'
+isr2_len:   equ $ - isr2_msg
+
+isr3_msg:   db 'Breakpoint'
+isr3_len:   equ $ - isr3_msg
+
+isr4_msg:   db 'Overflow'
+isr4_len:   equ $ - isr4_msg
+
+isr5_msg:   db 'BOUND Range Exceeded'
+isr5_len:   equ $ - isr5_msg
+
+isr6_msg:   db 'Invalid Opcode'
+isr6_len:   equ $ - isr6_msg
+
+isr7_msg:   db 'Device Not Available'
+isr7_len:   equ $ - isr7_msg
+
+isr8_msg:   db 'Double Fault'
+isr8_len:   equ $ - isr8_msg
+
+isr9_msg:   db 'Coprocessor Segment Overrun'
+isr9_len:   equ $ - isr9_msg
+
+isr10_msg:   db 'Invalid TSS'
+isr10_len:   equ $ - isr10_msg
+
+isr11_msg:   db 'Segment Not Present'
+isr11_len:   equ $ - isr11_msg
+
+isr12_msg:   db 'Stack-Segment Fault'
+isr12_len:  equ $ - isr12_msg
+
+isr13_msg:   db 'General Protection'
+isr13_len:  equ $ - isr13_msg
+
+isr14_msg:   db 'Page Fault'
+isr14_len:  equ $ - isr14_msg
+
+isr16_msg:   db 'Floating-Point error'
+isr16_len:  equ $ - isr16_msg
+
+isr17_msg:   db 'Alignment Check'
+isr17_len:  equ $ - isr17_msg
+
+isr18_msg:   db 'Machine Check'
+isr18_len:  equ $ - isr18_msg
+
+isr19_msg:   db 'SIMD Floating-Point Exception'
+isr19_len:  equ $ - isr19_msg
+
+isr20_msg:   db 'Virtualization Error'
+isr20_len:  equ $ - isr20_msg
+
 ;;
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
 ISR 0
+ISR 1
+ISR 2
+ISR 3
+ISR 4
+ISR 5
+ISR 6
+ISR 7
+ISR 8
+ISR 9
+ISR 10
+ISR 11
+ISR 12
+ISR 13
+ISR 14
+ISR 16
+ISR 17
+ISR 18
+ISR 19
+ISR 20
 
 ;;
 ;; Rutina de atención del RELOJ
