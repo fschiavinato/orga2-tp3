@@ -48,7 +48,7 @@ start:
     int 10h ; load 8x8 font
 
     ; Imprimir mensaje de bienvenida
-    imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
+    imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0 
     
 
     ; Habilitar A20
@@ -123,6 +123,7 @@ BITS 32
     mov ebx, 0xFFFF
     mov ecx, 0xFFFF
     mov edx, 0xFFFF
+    int 0x07
     jmp $
     jmp $
 
