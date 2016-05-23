@@ -155,15 +155,41 @@ struct Pepe {
 
 \subsection{Ejercicio 1}
 
-En el ejercicio 1 se completa e inicializa la GDT, completar los segmento e inicilizarla memoria. Ademas, se debe stearla pantalla en gris, setear la pila, etcetera.
+En el ejercicio 1 se completa e inicializa la GDT, con cuatro segmentos, 2 de codigo(uno del kernel y el otro del usuario), y dos de datos( uno del kenrnel y otro del usuario), dirrecionando los primeros 878MB de memoria.(Se dejan las primeras 3 posiciones de la gdt libre, una or ser la nula y las otras dos por reestricciones del tp).El primer indice que deben usar para declarar los segmentos es el 4(contando desde 0).
 
 
 
-Para realizar el puntos  agregamos laos descriptores desegmento a la GDT, modificando el archivo gdt.c 
+
+Para completar la gdt, agregamos los descriptores de segmento a la GDT, modificando el archivo gdt.c.
+Alli, describimos los segmentos completando  structuras de descriptores y descriptor de gst(str_gdt_entry, y  str_gdt_descriptor, definidas en gdt.h),
+Alli, al nulo se le pone todo 0 y a los otros se le pone:
+Se las flatea, poniendoles a todas la misma direccion base (0x00) y de limite se coloca el tamano-1 /0x400 +0x3FF(se pone asi, porqu en realidad vamos a poner el de granularidad en 1, para que la cuenta nos de el tamano pedido menos 1.
+el tipo es read/write(0x02) en los de data, y (execute/read) en los de codigo. El s es 1 x ser de datos o codigos,  la dpl es 3 o 0 dependiendo si es un segmento de usuario o del kernel. el p es 1, (???), el l esta en 0 x estar en 32 bytes. lel db esta en 1 por el mismo motivo. 
+Tambien hay un segmento de video(del kernel) cuya direccion de entrada esla pedida por la catedra(y limite de acuerdo al tamano de la pantalla pedida.)), el resto es como un segmento de codigo definido antes.
+Utilizando estos defines
+
+(imagen de toma de pantalla)
+
+se dispuso asi en la gdt.c.
 
 
+(imagen de toma de pantalla)
+(imagen de toma de pantalla)
+(imagen de toma de pantalla)
 
- (aqui van las capturas depantalla) 
+En el kernel.asm, se pasa a modo protegido, para hacerlo se pone la directiva BITS 16, (para que el linker sepa que se interpreta en 16 bits las direcciones)
+Luego , se desabilitan ls interrupciones(cli), se cambia el modo de video(interrupcion)(se va a modo 3h y luego   se setea) 
+Se da mensaje de bienvenida, pero como no es parte del ejerciocio no lo describo(por ahora)
+Se habilita laA20 (con una funcion) y se carga la gdt con la funcion lgdt(y la direccion de la tabla(y tam))/
+Luego se pasa a modo protegido seteando el bit PE del registro CR0. y se salta a la siguiente instruccion, (desde seg de codigo de la gdt), que es la siguiente (en el medio, se usa la direcctiva BITS 32, para que reconozca que trabajamos con 32 bites). Se establecen los selecotores de segmento (ds, es, fs, gs, ss)(todos apuntan al segmento de datos del kernel, porque es el codigo del kernel)
+Con estos segmentos seteados, podemos establecer la pila moviendo la base a los reg ebp y esp (bdireccion pedida por catedra)
+Se imprime otro mensaje(luego describo), y se inicializa la pantalla, para ell llamamos a la funcion inicializar_pantalla, que pushea ds, mueve eax al segmento de video,(y a la primera posicion), y mientras el contador ecx loopee(tiene la cantidad de words a pintar de gris), avanzamos eax y por cada 2 bytes llenamos el lugar del color querido (01110000b ; 0111 = grey sin bright, 0000 = black sin bright). Luego popeamos ds y salimos. (porque dejamos el espacio???)
+   
+Terminamos ejercicio 1
+
+\subsection{Ejercicio 2}
+
+
 
 
 
