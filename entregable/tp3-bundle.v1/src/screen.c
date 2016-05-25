@@ -53,5 +53,12 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 
 
 
+/*void imprimir_pantalla(){
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    int i;
+    for(i = 0, )
 
 
+}
+
+*/

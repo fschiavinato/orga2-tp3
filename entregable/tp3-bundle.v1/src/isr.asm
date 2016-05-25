@@ -25,6 +25,8 @@ extern sched_proximo_indice
 global _isr%1
 
 _isr%1:
+    mov eax, %1
+    xchg bx, bx
     imprimir_texto_mp isr%1_msg, isr%1_len, 0x07, 0, 0
     jmp $
 

@@ -11,13 +11,14 @@
 %define GDT_IDX_USER_CODE_DESC 0x05*GDT_DESC_SIZE
 %define GDT_IDX_USER_DATA_DESC 0x06*GDT_DESC_SIZE
 %define GDT_IDX_VIDEO_DESC 0x07*GDT_DESC_SIZE
-
+%define ADDR_PAGE_DIR			0x00027000
+%define PAGE_PRESRW             0x03
 global start
 extern GDT_DESC
 extern idt_inicializar
 extern IDT_DESC
 extern deshabilitar_pic
-
+extern  mmu_inicializar_dir_kernel 
 ;; Saltear seccion de datos
 jmp start
 
@@ -49,7 +50,6 @@ start:
 
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0 
-    
 
     ; Habilitar A20
     call habilitar_A20
@@ -83,17 +83,25 @@ BITS 32
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
+init_pantalla:
+
     ; Inicializar pantalla
     call inicializar_pantalla
     
+    
     ; Inicializar el manejador de memoria
  
-    ; Inicializar el directorio de paginas
-    
-    ; Cargar directorio de paginas
+    ; Inicializar el directorio de paginas    
+    call mmu_inicializar_dir_kernel
 
+    ; Cargar directorio de paginas
+ 	mov eax, ADDR_PAGE_DIR
+    mov cr3, eax
     ; Habilitar paginacion
-    
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax 
+
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
@@ -102,10 +110,9 @@ BITS 32
 
     ; Inicializar la IDT
     call idt_inicializar
-    call deshabilitar_pic
+;    call deshabilitar_pic
     
     ; Cargar IDT
-
     lidt [IDT_DESC]
     
  
@@ -114,8 +121,7 @@ BITS 32
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
-    sti
-    
+;	sti
     ; Saltar a la primera tarea: Idle
 
     ; Ciclar infinitamente (por si algo sale mal...)
@@ -123,7 +129,6 @@ BITS 32
     mov ebx, 0xFFFF
     mov ecx, 0xFFFF
     mov edx, 0xFFFF
-    int 0x07
     jmp $
     jmp $
 
@@ -146,3 +151,6 @@ inicializar_pantalla:
     loop .loop
     pop ds
     ret
+
+
+

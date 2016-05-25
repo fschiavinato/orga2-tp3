@@ -79,8 +79,15 @@
 #define SEG_TASK_BUSY      0x09
 #define SEG_TASK_NONBUSY   0x0B
  
+//MMU
+#define PAGE_SIZE_HEX 			0x1000
+#define ENTRIES_TABLE			1024
+#define PAGE_PRESRW             0x03
+
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 #define VIDEO_SCREEN            0x000B8000 /* direccion fisica del buffer de video */
-
-#endif  /* !__DEFINES_H__ */
+#define ADDR_PAGE_DIR			0x00027000
+#define ADDR_PAGE_TABLE			0x00028000
+#define NUM_TABLES_IDENTITY_MAPPING  0x01
+ #endif  /* !__DEFINES_H__ */
