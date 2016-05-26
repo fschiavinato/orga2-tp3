@@ -5,6 +5,7 @@
 
 %include "imprimir.mac"
 
+
 %define GDT_DESC_SIZE 0x08
 %define GDT_IDX_KERNEL_CODE_DESC 0x03*GDT_DESC_SIZE
 %define GDT_IDX_KERNEL_DATA_DESC 0x04*GDT_DESC_SIZE
@@ -13,12 +14,17 @@
 %define GDT_IDX_VIDEO_DESC 0x07*GDT_DESC_SIZE
 %define ADDR_PAGE_DIR			0x00027000
 %define PAGE_PRESRW             0x03
+%define C_BG_BLACK              (0x0 << 4)
+%DEFINE COL_SIZE                80
 global start
 extern GDT_DESC
 extern idt_inicializar
 extern IDT_DESC
 extern deshabilitar_pic
 extern  mmu_inicializar_dir_kernel 
+extern print_int
+extern imprimir_pan
+
 ;; Saltear seccion de datos
 jmp start
 
@@ -87,6 +93,7 @@ init_pantalla:
 
     ; Inicializar pantalla
     call inicializar_pantalla
+    call imprimir_pantalla
     
     
     ; Inicializar el manejador de memoria
@@ -149,6 +156,30 @@ inicializar_pantalla:
     mov byte [eax], 01110000b ; 0111 = grey sin bright, 0000 = black sin bright
     inc eax
     loop .loop
+    pop ds
+    ret
+
+imprimir_pantalla:
+    push ds
+    mov eax, GDT_IDX_VIDEO_DESC
+    mov ds, eax
+    mov ecx, COL_SIZE ; 80 es el tamano de la fila 
+    mov eax, 0x00 
+.loop:
+    mov byte [eax], ' ' ; Guardamos un espacio.
+    inc eax
+    mov byte [eax], 00000000b ; 0111 = grey sin bright, 0000 = black sin bright
+    inc eax
+    loop .loop   
+    ;Ahora vamos a colorear  5 filas  del fondo
+    mov ecx, COL_SIZE * 5 
+    mov eax, COL_SIZE * 90     ;empezamos de la fila 90(180), vamos hasta la 100(200)
+.ciclo:
+    mov byte [eax], ' ' ; Guardamos un espacio.
+    inc eax
+    mov byte [eax], 00000000b ; 0111 = grey sin bright, 0000 = black sin bright
+    inc eax
+    loop .ciclo    
     pop ds
     ret
 

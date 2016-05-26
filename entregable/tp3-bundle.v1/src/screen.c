@@ -6,6 +6,7 @@
 */
 
 #include "screen.h"
+#include "colors.h"  
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
@@ -40,7 +41,7 @@ void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, un
     }
 }
 
-void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr) {
+void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr) {   
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     if( n > 9 ) {
       int a = n / 10;
@@ -49,16 +50,18 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     }
     p[y][x].c = '0'+n;
     p[y][x].a = attr;
-}
-
-
-
-/*void imprimir_pantalla(){
-    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-    int i;
-    for(i = 0, )
-
 
 }
 
-*/
+
+
+//void imprimir_pan(){
+  //   ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    // print_int(10, 90, 5, 0);
+     //int i;
+     //for(i =0; i < size; i++){
+     // p[y][x+ size - i - 1].c = C_FG_BLACK ;
+     //p[y][x + size - i - 1].a = attr; 
+   //  }
+  //}
+
