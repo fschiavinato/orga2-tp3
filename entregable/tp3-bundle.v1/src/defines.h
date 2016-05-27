@@ -80,9 +80,24 @@
 #define SEG_TASK_NONBUSY   0x0B
  
 //MMU
-#define PAGE_SIZE_HEX 			0x1000
+#define PAGE_SIZE 				0x1000
 #define ENTRIES_TABLE			1024
 #define PAGE_PRESRW             0x03
+
+#define INICIO_PAGINAS_LIBRES	0x100000 	// Es lo que esta en Identity Maping (=0x400000)
+
+
+#define PDE_INDEX(virtual) virtual >> 22
+#define PTE_INDEX(virtual) (virtual << 10) >> 22
+#define PDE_PRESENT(entry)	(entry & 0x1)
+#define PTE_PRESENT(entry)	(entry & 0x1)
+#define PDE_DIRECCION(entry)	(entry & 0xFFFFF000)
+#define ALIGN(dir)			dir
+#define PG_READ 			0x0
+#define PG_WRITE      		0x2
+#define PG_USER 			0x4
+#define PG_KERNEL      		0x0
+#define PG_PRESENT         	0x1
 
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */

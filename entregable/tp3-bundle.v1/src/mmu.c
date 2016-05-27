@@ -7,25 +7,88 @@
 
 #include "mmu.h"
 
-void mmu_inicializar() {
- 
+unsigned int proxima_pagina_libre;
 
+void mmu_inicializar() {
+ 	proxima_pagina_libre = INICIO_PAGINAS_LIBRES;
+}
+
+unsigned int mmu_proxima_pagina_fisica_libre() {
+	unsigned int pagina_libre = proxima_pagina_libre;
+	proxima_pagina_libre += PAGE_SIZE;
+	return pagina_libre;
+}
+
+void mmu_mapear_pagina(unsigned int virtual,
+unsigned int cr3,
+unsigned int fisica, 
+unsigned char attr) {
+	unsigned int *pdirectorio = (unsigned int*) cr3;
+	unsigned int *ptabla;
+	int i = 0;
+	if(!PDE_PRESENT(pdirectorio[PDE_INDEX(virtual)])) {
+		ptabla = (unsigned int*) mmu_proxima_pagina_fisica_libre();
+		pdirectorio[PDE_INDEX(virtual)] = (unsigned int) ptabla | (unsigned int) PG_USER | (unsigned int) PG_WRITE | (unsigned int) PG_PRESENT;
+		for(; i < ENTRIES_TABLE; i++)
+			ptabla[i] = 0x0;
+	} 
+	else 
+		ptabla = (unsigned int*) PDE_DIRECCION(pdirectorio[PDE_INDEX(virtual)]);
+	if(!PTE_PRESENT(ptabla[PTE_INDEX(virtual)]))
+		ptabla[PTE_INDEX(virtual)] = fisica | attr | PG_PRESENT;
+	tlbflush();
+}
+
+void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
+	unsigned int *pdirectorio = (unsigned int*) cr3;
+	unsigned int *ptabla;
+	int i = 0;
+	if(!PDE_PRESENT(pdirectorio[PDE_INDEX(virtual)])) {
+		ptabla = (unsigned int*) PDE_DIRECCION(pdirectorio[PDE_INDEX(virtual)]);
+		ptabla[PTE_INDEX(virtual)] = 0x0;
+		for(; i < ENTRIES_TABLE && !PTE_PRESENT(ptabla[i]); i++);
+		if(i == ENTRIES_TABLE) {
+			pdirectorio[PDE_INDEX(virtual)] = 0x0;
+		}
+	}
+	tlbflush();
 }
 
 
-void mmu_inicializar_dir_kernel(){
+unsigned int* mmu_inicializar_dir_tarea() {
+	unsigned int* pdirectorio = (unsigned int*) mmu_proxima_pagina_fisica_libre();
+	
+	int i, j;
+	for (i = 0; i < NUM_TABLES_IDENTITY_MAPPING; i++) {
+		unsigned int*  ptabla = (unsigned int*) mmu_proxima_pagina_fisica_libre();
+		pdirectorio[i] = (unsigned int) ptabla | (unsigned int) PG_PRESENT |  (unsigned int) PG_WRITE | (unsigned int) PG_KERNEL;
+
+		for(j = 0; j < PAGE_SIZE; j++) {
+			ptabla[j] = (i * (ENTRIES_TABLE) + j) * PAGE_SIZE + PAGE_PRESRW;
+		}
+		ptabla += ENTRIES_TABLE; 
+	}
+	for (; i < ENTRIES_TABLE; i++) {
+		pdirectorio[i] = 0;
+	}
+	tlbflush();
+	return pdirectorio;
+}
+
+void mmu_inicializar_dir_kernel() {
   unsigned int*  pdirectorio = (unsigned int*) ADDR_PAGE_DIR;
   unsigned int*  ptabla = (unsigned int*) ADDR_PAGE_TABLE;
   int i, j;
   for (i = 0; i < NUM_TABLES_IDENTITY_MAPPING; i++)	{
     pdirectorio[i] = ((unsigned int) ptabla) + PAGE_PRESRW;
 
-    for(j = 0; j < PAGE_SIZE_HEX; j++) {
-    	ptabla[j] = (i * (ENTRIES_TABLE) + j) * PAGE_SIZE_HEX + PAGE_PRESRW;
+    for(j = 0; j < PAGE_SIZE; j++) {
+    	ptabla[j] = (i * (ENTRIES_TABLE) + j) * PAGE_SIZE + PAGE_PRESRW;
     }
-    ptabla += ENTRIES_TABLE; // PAGE_SIZE_HEX está en bytes. Estamos sumandolo a un puntero uint, con lo cual C lo multiplica por 4.
+    ptabla += ENTRIES_TABLE;
   }
   for (; i < ENTRIES_TABLE; i++) {
   	pdirectorio[i] = 0;
   }
+  tlbflush();
 }

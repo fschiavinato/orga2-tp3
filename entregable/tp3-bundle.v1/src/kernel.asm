@@ -15,13 +15,15 @@
 %define ADDR_PAGE_DIR			0x00027000
 %define PAGE_PRESRW             0x03
 %define C_BG_BLACK              (0x0 << 4)
-%DEFINE COL_SIZE                80
+%define COL_SIZE                80
+%define VIDEO_SCREEN			0xB8000
 global start
 extern GDT_DESC
 extern idt_inicializar
 extern IDT_DESC
 extern deshabilitar_pic
 extern  mmu_inicializar_dir_kernel 
+extern  mmu_inicializar_dir_tarea 
 extern print_int
 extern imprimir_pan
 
@@ -126,6 +128,16 @@ init_pantalla:
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial
+    mov eax, cr3
+    push eax
+    xchg bx,bx
+    call mmu_inicializar_dir_tarea
+    mov cr3, eax
+    mov word [VIDEO_SCREEN], 0xA
+
+    pop eax
+    mov cr3, eax
+
 
     ; Habilitar interrupciones
 ;	sti

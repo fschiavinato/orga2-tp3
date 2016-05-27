@@ -53,15 +53,11 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 
 }
 
+/*void imprimir_constantes(){
+char
+}*/
 
 
-//void imprimir_pan(){
-  //   ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-    // print_int(10, 90, 5, 0);
-     //int i;
-     //for(i =0; i < size; i++){
-     // p[y][x+ size - i - 1].c = C_FG_BLACK ;
-     //p[y][x + size - i - 1].a = attr; 
-   //  }
-  //}
+
+
 
