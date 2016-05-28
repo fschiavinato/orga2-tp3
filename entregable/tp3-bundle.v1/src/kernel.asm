@@ -19,13 +19,14 @@
 %define VIDEO_SCREEN			0xB8000
 global start
 extern GDT_DESC
-extern idt_inicializar
 extern IDT_DESC
+extern idt_inicializar
 extern deshabilitar_pic
 extern  mmu_inicializar_dir_kernel 
 extern  mmu_inicializar_dir_tarea 
+extern  mmu_inicializar 
 extern print_int
-extern imprimir_pan
+extern imprimir_pantalla
 
 ;; Saltear seccion de datos
 jmp start
@@ -99,6 +100,7 @@ init_pantalla:
     
     
     ; Inicializar el manejador de memoria
+    call mmu_inicializar
  
     ; Inicializar el directorio de paginas    
     call mmu_inicializar_dir_kernel
@@ -128,16 +130,6 @@ init_pantalla:
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial
-    mov eax, cr3
-    push eax
-    xchg bx,bx
-    call mmu_inicializar_dir_tarea
-    mov cr3, eax
-    mov word [VIDEO_SCREEN], 0xA
-
-    pop eax
-    mov cr3, eax
-
 
     ; Habilitar interrupciones
 ;	sti
@@ -171,29 +163,6 @@ inicializar_pantalla:
     pop ds
     ret
 
-imprimir_pantalla:
-    push ds
-    mov eax, GDT_IDX_VIDEO_DESC
-    mov ds, eax
-    mov ecx, COL_SIZE ; 80 es el tamano de la fila 
-    mov eax, 0x00 
-.loop:
-    mov byte [eax], ' ' ; Guardamos un espacio.
-    inc eax
-    mov byte [eax], 00000000b ; 0111 = grey sin bright, 0000 = black sin bright
-    inc eax
-    loop .loop   
-    ;Ahora vamos a colorear  5 filas  del fondo
-    mov ecx, COL_SIZE * 5 
-    mov eax, COL_SIZE * 90     ;empezamos de la fila 90(180), vamos hasta la 100(200)
-.ciclo:
-    mov byte [eax], ' ' ; Guardamos un espacio.
-    inc eax
-    mov byte [eax], 00000000b ; 0111 = grey sin bright, 0000 = black sin bright
-    inc eax
-    loop .ciclo    
-    pop ds
-    ret
 
 
 

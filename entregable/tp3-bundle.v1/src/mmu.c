@@ -55,7 +55,7 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 }
 
 
-unsigned int* mmu_inicializar_dir_tarea() {
+unsigned int mmu_inicializar_dir_tarea() {
 	unsigned int* pdirectorio = (unsigned int*) mmu_proxima_pagina_fisica_libre();
 	
 	int i, j;
@@ -71,8 +71,9 @@ unsigned int* mmu_inicializar_dir_tarea() {
 	for (; i < ENTRIES_TABLE; i++) {
 		pdirectorio[i] = 0;
 	}
+
 	tlbflush();
-	return pdirectorio;
+	return (unsigned int) pdirectorio;
 }
 
 void mmu_inicializar_dir_kernel() {

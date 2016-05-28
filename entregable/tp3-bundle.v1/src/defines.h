@@ -84,7 +84,7 @@
 #define ENTRIES_TABLE			1024
 #define PAGE_PRESRW             0x03
 
-#define INICIO_PAGINAS_LIBRES	0x100000 	// Es lo que esta en Identity Maping (=0x400000)
+#define INICIO_PAGINAS_LIBRES	0x100000 	
 
 
 #define PDE_INDEX(virtual) virtual >> 22
