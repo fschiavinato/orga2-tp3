@@ -22,6 +22,8 @@ extern GDT_DESC
 extern IDT_DESC
 extern idt_inicializar
 extern deshabilitar_pic
+extern resetear_pic
+extern habilitar_pic
 extern  mmu_inicializar_dir_kernel 
 extern  mmu_inicializar_dir_tarea 
 extern  mmu_inicializar 
@@ -98,7 +100,6 @@ init_pantalla:
     call inicializar_pantalla
     call imprimir_pantalla
     
-    
     ; Inicializar el manejador de memoria
     call mmu_inicializar
  
@@ -106,8 +107,9 @@ init_pantalla:
     call mmu_inicializar_dir_kernel
 
     ; Cargar directorio de paginas
- 	mov eax, ADDR_PAGE_DIR
+    mov eax, ADDR_PAGE_DIR
     mov cr3, eax
+
     ; Habilitar paginacion
     mov eax, cr0
     or eax, 0x80000000
@@ -121,18 +123,18 @@ init_pantalla:
 
     ; Inicializar la IDT
     call idt_inicializar
-;    call deshabilitar_pic
     
     ; Cargar IDT
     lidt [IDT_DESC]
-    
  
     ; Configurar controlador de interrupciones
+    call resetear_pic
+    call habilitar_pic
 
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
-;	sti
+    sti
     ; Saltar a la primera tarea: Idle
 
     ; Ciclar infinitamente (por si algo sale mal...)

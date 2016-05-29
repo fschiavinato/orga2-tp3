@@ -9,6 +9,7 @@
 
 #define PIC1_PORT 0x20
 #define PIC2_PORT 0xA0
+#define PIC_EOI_SPECIFIC 0x60
 
 __inline __attribute__((always_inline)) void outb(int port, unsigned char data) {
     __asm __volatile("outb %0,%w1" : : "a" (data), "d" (port));
@@ -38,5 +39,15 @@ void habilitar_pic() {
 void deshabilitar_pic() {
     outb(PIC1_PORT+1, 0xFF);
     outb(PIC2_PORT+1, 0xFF);
+}
+
+void eoi(unsigned char itype) {
+    if(itype < 0x28) {
+        outb(PIC1_PORT+0, (itype - 0x20) | PIC_EOI_SPECIFIC);
+    }
+    else {
+        outb(PIC1_PORT+0, 0x02 | PIC_EOI_SPECIFIC);
+        outb(PIC2_PORT+0, (itype - 0x28) | PIC_EOI_SPECIFIC);
+    }
 }
 

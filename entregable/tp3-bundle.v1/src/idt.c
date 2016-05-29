@@ -41,6 +41,12 @@ idt_descriptor IDT_DESC = {
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
 
+#define IDT_ENTRYUSR(numero)                                                                                        \
+    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
+    idt[numero].segsel = (unsigned short) 0x18;                                                                  \
+    idt[numero].attr = (unsigned short) 0xEF00; /*P=1, DPL=11, TYPE=01111(TRAP 32bits) BANANA!*/                                                                  \
+    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
+
 
 void idt_inicializar() {
     // Excepciones
@@ -64,4 +70,7 @@ void idt_inicializar() {
     IDT_ENTRY(18)
     IDT_ENTRY(19)
     IDT_ENTRY(20)
+    IDT_ENTRY(32) // 0x20: timer
+    IDT_ENTRY(33) // 0x21: keyboard
+    IDT_ENTRYUSR(102) // 0x66: software
 }

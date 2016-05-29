@@ -13,9 +13,25 @@ sched_tarea_selector:   dw 0x00
 
 ;; PIC
 extern fin_intr_pic1
+extern eoi
 
 ;; Sched
 extern sched_proximo_indice
+
+;; Keyboard
+%define KEYBOARD_PORT 0x60
+%define KEY_W 0x11
+%define KEY_A 0x1E
+%define KEY_S 0x1F
+%define KEY_D 0x20
+%define KEY_LSHIFT 0x2A
+%define KEY_I 0x17
+%define KEY_K 0x25
+%define KEY_L 0x26
+%define KEY_J 0x24
+%define KEY_RSHIFT 0x36
+
+%define KEY_Y 0x15
 
 ;;
 ;; Definición de MACROS
@@ -26,7 +42,6 @@ global _isr%1
 
 _isr%1:
     mov eax, %1
-    xchg bx, bx
     imprimir_texto_mp isr%1_msg, isr%1_len, 0x07, 0, 0
     jmp $
 
@@ -123,6 +138,79 @@ ISR 18
 ISR 19
 ISR 20
 
+global _isr32
+global _isr33
+global _isr102
+
+_isr32:
+    pushad
+    call proximo_reloj
+    push 32
+    call eoi
+    add esp, 4
+    popad
+    iret
+
+_isr33:
+    pushad
+    in al, KEYBOARD_PORT
+
+    mov ebx, 'w'
+    cmp al, KEY_W
+    je tecla_valida
+
+    mov ebx, 'a'
+    cmp al, KEY_A
+    je tecla_valida
+
+    mov ebx, 's'
+    cmp al, KEY_S
+    je tecla_valida
+
+    mov ebx, 'd'
+    cmp al, KEY_D
+    je tecla_valida
+
+    mov ebx, 'L'
+    cmp al, KEY_LSHIFT
+    je tecla_valida
+
+    mov ebx, 'i'
+    cmp al, KEY_I
+    je tecla_valida
+
+    mov ebx, 'k'
+    cmp al, KEY_K
+    je tecla_valida
+
+    mov ebx, 'j'
+    cmp al, KEY_J
+    je tecla_valida
+
+    mov ebx, 'l'
+    cmp al, KEY_L
+    je tecla_valida
+
+    mov ebx, 'R'
+    cmp al, KEY_RSHIFT
+    je tecla_valida
+
+fin_isr33:
+    push 33
+    call eoi
+    add esp, 4
+    popad
+    iret
+
+_isr102:
+    pushad
+    push 102
+    call eoi
+    add esp, 4
+    popad
+    iret
+    
+
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
@@ -159,4 +247,6 @@ proximo_reloj:
                 popad
         ret
         
-        
+tecla_valida:
+    mov [0xb809e], bl
+    jmp fin_isr33        
