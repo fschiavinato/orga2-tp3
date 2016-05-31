@@ -43,7 +43,7 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 	unsigned int *pdirectorio = (unsigned int*) cr3;
 	unsigned int *ptabla;
 	int i = 0;
-	if(!PDE_PRESENT(pdirectorio[PDE_INDEX(virtual)])) {
+	if(/*!*/PDE_PRESENT(pdirectorio[PDE_INDEX(virtual)])) {//??
 		ptabla = (unsigned int*) PDE_DIRECCION(pdirectorio[PDE_INDEX(virtual)]);
 		ptabla[PTE_INDEX(virtual)] = 0x0;
 		for(; i < ENTRIES_TABLE && !PTE_PRESENT(ptabla[i]); i++);
@@ -55,10 +55,10 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 }
 
 
-unsigned int mmu_inicializar_dir_tarea() {
+unsigned int mmu_inicializar_dir_tarea( unsigned char* code, unsigned int elmapa_code, unsigned int elmapa_data) {
 	unsigned int* pdirectorio = (unsigned int*) mmu_proxima_pagina_fisica_libre();
-	
 	int i, j;
+	unsigned char* pcodigo_destino = (unsigned char*) DIRECCION_VIRTUAL_CODIGO_TAREA;
 	for (i = 0; i < NUM_TABLES_IDENTITY_MAPPING; i++) {
 		unsigned int*  ptabla = (unsigned int*) mmu_proxima_pagina_fisica_libre();
 		pdirectorio[i] = (unsigned int) ptabla | (unsigned int) PG_PRESENT |  (unsigned int) PG_WRITE | (unsigned int) PG_KERNEL;
@@ -71,6 +71,17 @@ unsigned int mmu_inicializar_dir_tarea() {
 	for (; i < ENTRIES_TABLE; i++) {
 		pdirectorio[i] = 0;
 	}
+
+	mmu_mapear_pagina(DIRECCION_VIRTUAL_CODIGO_TAREA, (unsigned int) pdirectorio, elmapa_code, PG_USER | PG_WRITE);
+	mmu_mapear_pagina(DIRECCION_VIRTUAL_CODIGO_TAREA + PAGE_SIZE, (unsigned int) pdirectorio, elmapa_data, PG_USER | PG_WRITE);
+	
+	mmu_mapear_pagina(DIRECCION_VIRTUAL_CODIGO_TAREA - PAGE_SIZE, rcr3(), elmapa_code, PG_KERNEL | PG_WRITE);
+
+	for(i = 0; i < PAGE_SIZE; i++) {
+		pcodigo_destino[i] = code[i];
+	}
+
+	mmu_unmapear_pagina(DIRECCION_VIRTUAL_CODIGO_TAREA - PAGE_SIZE, rcr3());
 
 	tlbflush();
 	return (unsigned int) pdirectorio;

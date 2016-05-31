@@ -40,6 +40,19 @@
 #define GDT_OFF_NULL_DESC           (GDT_IDX_NULL_DESC      << 3)
 
 
+/* Parametros del gate en la gdt */
+
+#define IDT_INTERRUPT	(0x6 << 8)
+#define IDT_TRAP		(0x7 << 8)
+#define IDT_TASK 		(0x5 << 8)
+#define IDT_32BITS		(0x1 << 11)
+#define IDT_16BITS		(0x0 << 11)
+#define IDT_USR0		(0x0 << 13)
+#define IDT_USR1		(0x1 << 13)
+#define IDT_USR2		(0x2 << 13)
+#define IDT_USR3		(0x3 << 13)
+#define IDT_PRESENT 	(0x1 << 15)
+
 /* Parametros del segmento en la gdt */
 /* -------------------------------------------------------------------------- */
 #define SEG_TYPE_SYSTEM  0x00 
@@ -57,6 +70,7 @@
 #define SEG_PRIV3 0x03
  
 // CODE/DATA
+
 #define SEG_DATA_RD        0x00 // Read-Only
 #define SEG_DATA_RDA       0x01 // Read-Only, accessed
 #define SEG_DATA_RDWR      0x02 // Read/Write
@@ -85,6 +99,7 @@
 #define PAGE_PRESRW             0x03
 
 #define INICIO_PAGINAS_LIBRES	0x100000 	
+#define DIRECCION_VIRTUAL_CODIGO_TAREA	0x08000000
 
 
 #define PDE_INDEX(virtual) virtual >> 22

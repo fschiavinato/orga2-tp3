@@ -18,10 +18,10 @@
 #define BORDE_INFERIOR_COLOR    (ca) {0x20, 0x0F}
 #define MARCADOR1_BOX_OFFSETX    48
 #define MARCADOR1_BOX_ANCHO      6
-#define MARCADOR1_BOX_COLOR     (ca) {0x20, 0x1F} // fondo azul, letras blancas.
+#define MARCADOR1_BOX_COLOR     (ca) {0x20, C_BG_BLUE | C_FG_WHITE} // fondo azul, letras blancas.
 #define MARCADOR2_BOX_OFFSETX    (48+MARCADOR1_BOX_ANCHO)
 #define MARCADOR2_BOX_ANCHO      6
-#define MARCADOR2_BOX_COLOR     (ca) {0x20, 0xEF} // fondo amarillo, letras blancas.
+#define MARCADOR2_BOX_COLOR     (ca) {0x20, C_BG_RED | C_FG_WHITE} // fondo rojo, letras blancas.
 
 #define RELOJES1_OFFSETX        3
 #define RELOJES1_OFFSETY        DIST_ABAJO(3)

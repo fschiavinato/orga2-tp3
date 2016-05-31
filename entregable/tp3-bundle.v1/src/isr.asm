@@ -145,9 +145,7 @@ global _isr102
 _isr32:
     pushad
     call proximo_reloj
-    push 32
-    call eoi
-    add esp, 4
+    call fin_intr_pic1
     popad
     iret
 
@@ -196,17 +194,13 @@ _isr33:
     je tecla_valida
 
 fin_isr33:
-    push 33
-    call eoi
-    add esp, 4
+    call fin_intr_pic1
     popad
     iret
 
 _isr102:
     pushad
-    push 102
-    call eoi
-    add esp, 4
+    mov eax, 0x42
     popad
     iret
     

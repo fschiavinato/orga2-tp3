@@ -37,14 +37,14 @@ idt_descriptor IDT_DESC = {
 #define IDT_ENTRY(numero)                                                                                        \
     idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
     idt[numero].segsel = (unsigned short) 0x18;                                                                  \
-    idt[numero].attr = (unsigned short) 0x8F00; /*P=1, DPL=00, TYPE=01111(TRAP 32bits) BANANA!*/                                                                  \
+    idt[numero].attr = (unsigned short) IDT_PRESENT | IDT_USR0 | IDT_INTERRUPT | IDT_32BITS;                                                                 \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
 
 #define IDT_ENTRYUSR(numero)                                                                                        \
     idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
     idt[numero].segsel = (unsigned short) 0x18;                                                                  \
-    idt[numero].attr = (unsigned short) 0xEF00; /*P=1, DPL=11, TYPE=01111(TRAP 32bits) BANANA!*/                                                                  \
+    idt[numero].attr = (unsigned short) IDT_PRESENT | IDT_USR3 | IDT_INTERRUPT | IDT_32BITS;                                                                \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
 
