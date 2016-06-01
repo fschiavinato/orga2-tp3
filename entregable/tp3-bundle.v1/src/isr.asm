@@ -13,7 +13,7 @@ sched_tarea_selector:   dw 0x00
 
 ;; PIC
 extern fin_intr_pic1
-extern eoi
+;;extern eoi
 
 ;; Sched
 extern sched_proximo_indice

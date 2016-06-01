@@ -34,18 +34,19 @@ idt_descriptor IDT_DESC = {
 */
 
 
-#define IDT_ENTRY(numero)                                                                                        \
-    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
-    idt[numero].segsel = (unsigned short) 0x18;                                                                  \
+#define IDT_ENTRY(numero)    /*es un descriptor de interrupcion de nivel kernel*/                                                                                    \
+    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) /*& (unsigned int) 0xFFFF*/);        \
+    idt[numero].segsel = (unsigned short) 0x18;      /*porque hay un 18 aca??*, para decir que es el tecero de la gdt? */                                                           \
     idt[numero].attr = (unsigned short) IDT_PRESENT | IDT_USR0 | IDT_INTERRUPT | IDT_32BITS;                                                                 \
-    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
+    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 /*& (unsigned int) 0xFFFF*/);
 
+/*comente el *& (unsigned int) 0xFFFF porque me arecio que no servia para nada, lo dej por si me equivoco*/
 
-#define IDT_ENTRYUSR(numero)                                                                                        \
-    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
-    idt[numero].segsel = (unsigned short) 0x18;                                                                  \
+#define IDT_ENTRYUSR(numero)  /*es un descriptor de  interrupcion de nivel usuario*/                                                                                      \
+    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) /*& (unsigned int) 0xFFFF*/);        \
+    idt[numero].segsel = (unsigned short) 0x18;      /*porque hay un 18 aca?? para decir que es el tecero de la gdt? */                                                            \
     idt[numero].attr = (unsigned short) IDT_PRESENT | IDT_USR3 | IDT_INTERRUPT | IDT_32BITS;                                                                \
-    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
+    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 /*& (unsigned int) 0xFFFF*/);
 
 
 void idt_inicializar() {
