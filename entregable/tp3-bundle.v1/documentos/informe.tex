@@ -180,7 +180,7 @@ se dispuso asi en la gdt.c.
 En el kernel.asm, se pasa a modo protegido, para hacerlo se pone la directiva BITS 16, (para que el linker sepa que se interpreta en 16 bits las direcciones)
 Luego , se desabilitan ls interrupciones(cli), se cambia el modo de video(interrupcion)(se va a modo 3h y luego   se setea) 
 Se da mensaje de bienvenida, pero como no es parte del ejerciocio no lo describo(por ahora)
-Se habilita laA20 (con una funcion) y se carga la gdt con la funcion lgdt(y la direccion de la tabla(y tam))/
+Se habilita la A20 (con una funcion) y se carga la gdt con la funcion lgdt(y la direccion de la tabla(y tam))/
 Luego se pasa a modo protegido seteando el bit PE del registro CR0. y se salta a la siguiente instruccion, (desde seg de codigo de la gdt), que es la siguiente (en el medio, se usa la direcctiva BITS 32, para que reconozca que trabajamos con 32 bites). Se establecen los selecotores de segmento (ds, es, fs, gs, ss)(todos apuntan al segmento de datos del kernel, porque es el codigo del kernel)
 Con estos segmentos seteados, podemos establecer la pila moviendo la base a los reg ebp y esp (bdireccion pedida por catedra)
 Se imprime otro mensaje(luego describo), y se inicializa la pantalla, para ell llamamos a la funcion inicializar_pantalla, que pushea ds, mueve eax al segmento de video,(y a la primera posicion), y mientras el contador ecx loopee(tiene la cantidad de words a pintar de gris), avanzamos eax y por cada 2 bytes llenamos el lugar del color querido (01110000b ; 0111 = grey sin bright, 0000 = black sin bright). Luego popeamos ds y salimos. (porque dejamos el espacio???)
@@ -189,9 +189,36 @@ Terminamos ejercicio 1
 
 \subsection{Ejercicio 2}
 
+Tenemos que completar las entradas de la IDT para asociar las diferentes rutinas a todas las llamadas del procesador. La IDT (Interrupt Descriptor Table), es la que almacena los decriptores de interrupciones(desriptores de sistema que pueden ser de tres tipos, trap, interrupt o task, nosotros vamos a usar interrupt solamente).  	
+	Para completar la IDT llamamos desde el kernel.asm a idt_inicializar.Esta funcion contiene los descriptores que seran puestos en la GDT (lo que hacemos utilizando la instruccion lidt [IDT_DESC], donde IDT_DESK el limite y la base de la IDT.)
+	En las entradas de la IDT(IDT_ENTRY), colocamos el offset de la direccion de la rutina de atencion de interrupciones (definidas como isr(numero de interrupcion)), y las rutinas de interrupcion consisten en imprimir infinitamente el texto el nombre de  la excepcion que el procesador genero,  en la pantalla(en la parte superior derecha); en los bits correspondientes del descriptor de interrupciones, pusimos los atributos (presente, le dimos prioridad 0 porque son excepciones del procesador, aclaramos el tipo(interrupt) y que sea de 32bits)EL segsel es el 0x18 por ser el tercero de la gdt, donde esta el descriptor del segmento donde se encuentran las rutinas de atencion de interrupciones.
+	Cuando se produce una interrupcion, el procesador busca en la istr la idt, va a la Idt y se va a la puerta de esa interrupcion, se usa el segmento para ir al segmento en la gdt donde esta el segmento, se le suma a la base el offset de la interrupcion para ir a la rutina correspondiente, y se la ejecuta.
+	 
+Terminamos el ejercicio 2
+	
+
+\subsection{Ejercicio 3}
+
+Vamos a limpiar el buffer de video para que se vea como lo indica la figura 7. Para ello, creamos la funcion imprimir_pantalla en screen.c.
+	La funcion imprimir_pantalla dibuja los bordes (negro), los marcadores(la parte roja y azul de la pantalla correspondiente a cada jugador ), los relojes(que luego de deberemos actualizar para que respondan a la interrupcion que genere una tarea siendo ejecutada), e imprime las vidas. Aqui tambien se utiliza la funcion print_int_sinattr, que como el nombre lo indica imprime en el lugar buscado del buffer de video el numero sin atributos,(agarramos, los que estan en actualizar vidas.)Luego tendremos que hacer esto actualizando las vidas con interrupciones. Cada vez que imprimimos excepto esta usamos la funcion print dada. Para la medicion de los margenes utilizamos defines(fijarse en la seccion defines)
+	\\
+	Ahora vamos a  definir la estructura de paginacion, y posteriormente, vamos a activar la paginacion.
+	Para definir lo primero, se inicializa el manejador de memoria llamando a mmu_inicializar,que nos coloca en las posicion del principio de las paginas libres(0x10000).A partir de ahora, las paginas seran dadas desde esta direccion de memoria. Luego, inicializamos el directorio del kernel. 
+	Lo que hacemos es (mediante  mmu_inicializar_dir_kernel)  es:
+	Primero, nos guardamos la direccion del directorio de paginas del kernel(0x27000) y la direccion de las tablas de paginas (0x28000).
+	Luego, para el numero de entradas del directorio paginas que requerimos para el identity mappig de nuestro tp (lease, una), se completa las entradas del directorio con la direccion de la tabla de paginas definida anteriormente y los atributos de estar presente y de poder ser leida y/o escrita(los ultimos bits en 3).Luego, como necesitamos todas las paginas que nos provee una tabla de paginas,(1024), llenamos cada entrada con la direccion que queremos mapear(0x00000000 a 0x003FFFFF), y  los atributos de ser leida a la entrada, escrita y presente). Luego avanzamos ptabla la cantidad de entradas de la pagina.(en este caso no se necesita, pero si se requisiese otra tabla de paginas en el directorio, que el ptabla apunte a la direccion de la proxima tabla.) Luego, se completa las entradas no validas del direcctorio de paginas con 0 para que no haya problemas.
+	Por ultimo, como vamos a cambiar la cr3 para inicializar la paginacion, flusheamos la tlb.
+	Luego movemos la direccion del directorio cargada en cr3, y habilitamos la paginacion seteando el bit 31 de cr0.
+
+	Imprimimos el nobre de grupo usando la funcion imprimir_texto.
+	 
+	Terminamos el ejercicio 3
 
 
 
+
+
+\section{Defines}
 
 \section{Conclusiones y trabajo futuro}
 
