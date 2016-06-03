@@ -26,7 +26,7 @@
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 8
+#define GDT_COUNT 68
 
 #define GDT_IDX_NULL_DESC           0
 #define GDT_IDX_KERNEL_CODE_DESC 3
@@ -34,6 +34,9 @@
 #define GDT_IDX_USER_CODE_DESC 5
 #define GDT_IDX_USER_DATA_DESC 6
 #define GDT_IDX_VIDEO_DESC 7
+#define GDT_IDX_INICIAL_DESC 8   //agregado
+#define GDT_IDX_IDDLE_DESC 9	 //agregado
+
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -42,21 +45,21 @@
 
 /* Parametros del gate en la gdt */
 
-#define IDT_INTERRUPT	(0x6 << 8)
-#define IDT_TRAP		(0x7 << 8)
-#define IDT_TASK 		(0x5 << 8)
-#define IDT_32BITS		(0x1 << 11)
-#define IDT_16BITS		(0x0 << 11)
-#define IDT_USR0		(0x0 << 13)
-#define IDT_USR1		(0x1 << 13)
-#define IDT_USR2		(0x2 << 13)
-#define IDT_USR3		(0x3 << 13)
-#define IDT_PRESENT 	(0x1 << 15)
+#define IDT_INTERRUPT	(0x6 << 8) /*es un puerta de interrupcion*/
+#define IDT_TRAP		(0x7 << 8) /*es una puerta de trampa*/
+#define IDT_TASK 		(0x5 << 8) /*es una puerta de tareas*/
+#define IDT_32BITS		(0x1 << 11)/*d*/
+#define IDT_16BITS		(0x0 << 11)/*d*/
+#define IDT_USR0		(0x0 << 13)/*dpl*/
+#define IDT_USR1		(0x1 << 13)/*dpl*/
+#define IDT_USR2		(0x2 << 13)/*dpl*/
+#define IDT_USR3		(0x3 << 13)/*dpl*/
+#define IDT_PRESENT 	(0x1 << 15)/*esta presente*/
 
 /* Parametros del segmento en la gdt */
 /* -------------------------------------------------------------------------- */
 #define SEG_TYPE_SYSTEM  0x00 
-#define SEG_TYPE_CODEDATA 0x01
+#define SEG_TYPE_CODEDATA 0x01    
 #define SEG_PRES 0x01 
 #define SEG_AVL 0x01
 #define SEG_MOD_16b 0x00
@@ -69,7 +72,7 @@
 #define SEG_PRIV2 0x02 
 #define SEG_PRIV3 0x03
  
-// CODE/DATA
+// CODE/DATA/
 
 #define SEG_DATA_RD        0x00 // Read-Only
 #define SEG_DATA_RDA       0x01 // Read-Only, accessed
@@ -91,8 +94,9 @@
 //SYSTEM
 
 #define SEG_TASK_BUSY      0x09
-#define SEG_TASK_NONBUSY   0x0B
- 
+#define SEG_TASK_NONBUSY   0x0B //esto ya estaba, el nombre del tag me hace pensar que es una segmento de tarea. pero el 0x0b deberia ser descriptor de TSS..como dice busy, asumo que era eso, y lo uso.
+
+
 //MMU
 #define PAGE_SIZE 				0x1000
 #define ENTRIES_TABLE			1024
@@ -117,7 +121,7 @@
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 #define VIDEO_SCREEN            0x000B8000 /* direccion fisica del buffer de video */
-#define ADDR_PAGE_DIR			0x00027000
+#define ADDR_PAGE_DIR			0x00027000 
 #define ADDR_PAGE_TABLE			0x00028000
 #define NUM_TABLES_IDENTITY_MAPPING  0x01
  #endif  /* !__DEFINES_H__ */

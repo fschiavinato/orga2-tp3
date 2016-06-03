@@ -100,6 +100,36 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     SEG_GRAN_1B,        /* g            */
         (unsigned char)     0x00,               /* base[31:24]  */
     }
+    /*[GDT_IDX_INICIAL_DESC] = (gdt_entry) {
+      /*  (unsigned short)                // limit[0:15]  */ // 80*25*2 = 0x1F40
+       /* (unsigned short)     0x0000,            /* base[0:15]   */
+      /*  (unsigned char)      0x01,              /* base[23:16]  */
+      /*  (unsigned char)     SEG_TASK_NONBUSY       /* type         */ 
+      /*  (unsigned char)     SEG_TYPE_CODEDATA,  /* s            */
+      /*  (unsigned char)     SEG_PRIV0,          /* dpl          */
+      /*  (unsigned char)     SEG_PRES,           /* p            */
+      /*  (unsigned char)                    /* limit[16:19] */
+      /*  (unsigned char)     SEG_AVL,            /* avl          */
+      /*  (unsigned char)     !SEG_IA32E,         /* l            */
+      /*  (unsigned char)     SEG_MOD_32b,        /* db           */
+      /*  (unsigned char)     SEG_GRAN_1B,        /* g            */
+      /*  (unsigned char)      0x00,             /* base[31:24]  */
+    /*}*/
+    /*[GDT_IDX_IDDLE_DESC] = (gdt_entry) {
+     /*   (unsigned short)    0X6A             /* limit[0:15]  */ // 106 tamano de tss -1 BANANA
+      /*  (unsigned short)    &tss_idle,             /* base[0:15]   */
+      /*  (unsigned char)     &tss_idle << 16,               /* base[23:16]  */
+      /*  (unsigned char)     SEG_TASK_NONBUSY       /* type         */ 
+      /*  (unsigned char)     SEG_TYPE_CODEDATA,  /* s            */
+      /*  (unsigned char)     SEG_PRIV0,          /* dpl          */
+      /*  (unsigned char)     SEG_PRES,           /* p            */
+      /*  (unsigned char)     0x00               /* limit[16:19] */
+      /*  (unsigned char)     SEG_AVL,            /* avl          */
+      /*  (unsigned char)     !SEG_IA32E,         /* l            */
+      /*  (unsigned char)     SEG_MOD_32b,        /* db           */
+     /*   (unsigned char)     SEG_GRAN_1B,        /* g            */
+      /*  (unsigned char)     &tss_iddle << 24,               /* base[31:24]  */
+    /*}*/
 };
 
 gdt_descriptor GDT_DESC = {
@@ -107,5 +137,9 @@ gdt_descriptor GDT_DESC = {
     (unsigned int) &gdt
 };
 
+/*
+unsigned int pedir_pagina_gdt(){
+    
 
-
+}
+*/
