@@ -4,33 +4,11 @@
 ; ==============================================================================
 
 %include "imprimir.mac"
+%include "defines.mac"
 
-
-%define GDT_DESC_SIZE 0x08
-%define GDT_IDX_KERNEL_CODE_DESC 0x03*GDT_DESC_SIZE
-%define GDT_IDX_KERNEL_DATA_DESC 0x04*GDT_DESC_SIZE
-%define GDT_IDX_USER_CODE_DESC 0x05*GDT_DESC_SIZE
-%define GDT_IDX_USER_DATA_DESC 0x06*GDT_DESC_SIZE
-%define GDT_IDX_VIDEO_DESC 0x07*GDT_DESC_SIZE
-%define ADDR_PAGE_DIR			0x00027000
-%define PAGE_PRESRW             0x03
-%define C_BG_BLACK              (0x0 << 4)
-%define COL_SIZE                80
-%define VIDEO_SCREEN			0xB8000
-global start
-extern GDT_DESC
-extern IDT_DESC
-extern idt_inicializar
-extern deshabilitar_pic
-extern resetear_pic
-extern habilitar_pic
-extern  mmu_inicializar_dir_kernel 
-extern  mmu_inicializar_dir_tarea 
-extern  mmu_inicializar 
-extern print_int
-extern imprimir_pantalla
 
 ;; Saltear seccion de datos
+global start
 jmp start
 
 ;;
@@ -66,6 +44,7 @@ start:
     call habilitar_A20
     
     ; Cargar la GDT
+    call gdt_inicializar
     lgdt [GDT_DESC]
 
     ; Setear el bit PE del registro CR0
@@ -94,8 +73,6 @@ BITS 32
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
-init_pantalla:
-
     ; Inicializar pantalla
     call inicializar_pantalla
     call imprimir_pantalla
@@ -116,6 +93,8 @@ init_pantalla:
     mov cr0, eax 
 
     ; Inicializar tss
+    mov eax, GDT_IDX_IDLE_TASK
+    ltr ax
 
     ; Inicializar tss de la tarea Idle
 
@@ -136,6 +115,7 @@ init_pantalla:
     ; Habilitar interrupciones
     sti
     ; Saltar a la primera tarea: Idle
+    jmp DIR_TAREA_IDLE
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

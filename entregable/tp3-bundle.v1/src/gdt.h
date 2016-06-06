@@ -32,8 +32,19 @@ typedef struct str_gdt_entry {
     unsigned char   base_31_24;
 } __attribute__((__packed__, aligned (8))) gdt_entry;
 
+typedef struct str_gdt_entry2d {
+    unsigned int lo;
+    unsigned int hi;
+} gdt_entry2d;
+
 /* Tabla GDT */
 extern gdt_entry gdt[];
 extern gdt_descriptor GDT_DESC;
+
+extern struct str_tss tss_idle;
+extern struct str_tss tss_inicial;
+
+void gdt_inicializar();
+unsigned int gdt_nueva_entrada();
 
 #endif  /* !__GDT_H__ */

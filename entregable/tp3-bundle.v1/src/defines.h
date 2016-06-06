@@ -14,11 +14,12 @@
 #define TRUE                    0x00000001
 #define FALSE                   0x00000000
 #define ERROR                   1
+#define NULL                    0
 
 
 /* Misc */
 /* -------------------------------------------------------------------------- */
-#define CANT_H                 15
+#define CANT_H                  15
 #define CANT                    5
 #define SIZE_W                  80
 #define SIZE_H                  44
@@ -26,17 +27,17 @@
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 68
+#define GDT_COUNT_INIT              9
 
 #define GDT_IDX_NULL_DESC           0
-#define GDT_IDX_KERNEL_CODE_DESC 3
-#define GDT_IDX_KERNEL_DATA_DESC 4
-#define GDT_IDX_USER_CODE_DESC 5
-#define GDT_IDX_USER_DATA_DESC 6
-#define GDT_IDX_VIDEO_DESC 7
-#define GDT_IDX_INICIAL_DESC 8   //agregado
-#define GDT_IDX_IDDLE_DESC 9	 //agregado
+#define GDT_IDX_KERNEL_CODE_DESC    3
+#define GDT_IDX_KERNEL_DATA_DESC    4
+#define GDT_IDX_USER_CODE_DESC      5
+#define GDT_IDX_USER_DATA_DESC      6
+#define GDT_IDX_VIDEO_DESC          7
+#define GDT_IDX_IDLE_TASK           8	 
 
+#define GDT_DESC_SIZE               0x08
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -45,7 +46,7 @@
 
 /* Parametros del gate en la gdt */
 
-#define IDT_INTERRUPT	(0x6 << 8) /*es un puerta de interrupcion*/
+#define IDT_INTERRUPT	        (0x6 << 8) /*es un puerta de interrupcion*/
 #define IDT_TRAP		(0x7 << 8) /*es una puerta de trampa*/
 #define IDT_TASK 		(0x5 << 8) /*es una puerta de tareas*/
 #define IDT_32BITS		(0x1 << 11)/*d*/
@@ -54,23 +55,29 @@
 #define IDT_USR1		(0x1 << 13)/*dpl*/
 #define IDT_USR2		(0x2 << 13)/*dpl*/
 #define IDT_USR3		(0x3 << 13)/*dpl*/
-#define IDT_PRESENT 	(0x1 << 15)/*esta presente*/
+#define IDT_PRESENT 	        (0x1 << 15)/*esta presente*/
 
 /* Parametros del segmento en la gdt */
 /* -------------------------------------------------------------------------- */
-#define SEG_TYPE_SYSTEM  0x00 
-#define SEG_TYPE_CODEDATA 0x01    
-#define SEG_PRES 0x01 
-#define SEG_AVL 0x01
-#define SEG_MOD_16b 0x00
-#define SEG_MOD_32b 0x01
-#define SEG_IA32E 0x01
-#define SEG_GRAN_1B 0x00 
-#define SEG_GRAN_4K 0x01
-#define SEG_PRIV0  0x00 
-#define SEG_PRIV1 0x01 
-#define SEG_PRIV2 0x02 
-#define SEG_PRIV3 0x03
+#define SEG_BASE_0_15(dir)                  ((unsigned int) dir)
+#define SEG_BASE_16_23(dir)                 (((unsigned int) dir) >> 16)
+#define SEG_BASE_24_31(dir)                 (((unsigned int) dir) >> 24)
+#define SEG_GET_BASE(b24_31,b16_23,b0_15)   (((unsigned int) b24_31) << 24) | (((unsigned int) b16_23) << 16) | ((unsigned int) b0_15)
+#define SEG_LIMIT_0_15(dir)                 ((unsigned int) dir)
+#define SEG_LIMIT_16_19(dir)                (((unsigned int) dir) >> 16)
+#define SEG_TYPE_SYSTEM                     0x00 
+#define SEG_TYPE_CODEDATA                   0x01    
+#define SEG_PRES                            0x01 
+#define SEG_AVL                             0x01
+#define SEG_MOD_16b                         0x00
+#define SEG_MOD_32b                         0x01
+#define SEG_IA32E                           0x01
+#define SEG_GRAN_1B                         0x00 
+#define SEG_GRAN_4K                         0x01
+#define SEG_PRIV0                           0x00 
+#define SEG_PRIV1                           0x01 
+#define SEG_PRIV2                           0x02 
+#define SEG_PRIV3                           0x03
  
 // CODE/DATA/
 
@@ -93,35 +100,44 @@
 
 //SYSTEM
 
-#define SEG_TASK_BUSY      0x09
-#define SEG_TASK_NONBUSY   0x0B //esto ya estaba, el nombre del tag me hace pensar que es una segmento de tarea. pero el 0x0b deberia ser descriptor de TSS..como dice busy, asumo que era eso, y lo uso.
+#define SEG_TASK_BUSY      0x0B
+#define SEG_TASK_NONBUSY   0x09 
 
 
-//MMU
-#define PAGE_SIZE 				0x1000
-#define ENTRIES_TABLE			1024
-#define PAGE_PRESRW             0x03
+#define SEG_TYPE_SYSTEM  0x00 
 
-#define INICIO_PAGINAS_LIBRES	0x100000 	
+/* Parametros de las entradas del directorio de paginas  */
+/* -------------------------------------------------------------------------- */
+#define PAGE_SIZE 		        0x1000
+#define ENTRIES_TABLE		        1024
+#define PAGE_PRESRW                     0x03
+
+#define INICIO_PAGINAS_LIBRES	        0x100000 	
 #define DIRECCION_VIRTUAL_CODIGO_TAREA	0x08000000
 
 
-#define PDE_INDEX(virtual) virtual >> 22
-#define PTE_INDEX(virtual) (virtual << 10) >> 22
-#define PDE_PRESENT(entry)	(entry & 0x1)
-#define PTE_PRESENT(entry)	(entry & 0x1)
-#define PDE_DIRECCION(entry)	(entry & 0xFFFFF000)
-#define ALIGN(dir)			dir
+#define PDE_INDEX(virtual)              (virtual >> 22)
+#define PTE_INDEX(virtual)              (virtual << 10) >> 22
+#define PDE_PRESENT(entry)	        (entry & 0x1)
+#define PTE_PRESENT(entry)	        (entry & 0x1)
+#define PDE_DIRECCION(entry)	        (entry & 0xFFFFF000)
 #define PG_READ 			0x0
-#define PG_WRITE      		0x2
+#define PG_WRITE      		        0x2
 #define PG_USER 			0x4
-#define PG_KERNEL      		0x0
-#define PG_PRESENT         	0x1
+#define PG_KERNEL      		        0x0
+#define PG_PRESENT         	        0x1
 
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
-#define VIDEO_SCREEN            0x000B8000 /* direccion fisica del buffer de video */
+#define VIDEO_SCREEN                    0x000B8000 /* direccion fisica del buffer de video */
 #define ADDR_PAGE_DIR			0x00027000 
 #define ADDR_PAGE_TABLE			0x00028000
-#define NUM_TABLES_IDENTITY_MAPPING  0x01
- #endif  /* !__DEFINES_H__ */
+#define NUM_TABLES_IDENTITY_MAPPING     0x01
+
+/* Scheduler */
+/* -------------------------------------------------------------------------- */
+
+#define QUANTUM                         1
+#define NUM_QUEUES                      3
+
+#endif  /* !__DEFINES_H__ */

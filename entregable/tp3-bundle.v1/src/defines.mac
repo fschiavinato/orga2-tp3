@@ -1,0 +1,62 @@
+;============
+;    GDT
+;============
+%define GDT_DESC_SIZE 0x08
+%define GDT_IDX_KERNEL_CODE_DESC        0x03*GDT_DESC_SIZE
+%define GDT_IDX_KERNEL_DATA_DESC        0x04*GDT_DESC_SIZE
+%define GDT_IDX_USER_CODE_DESC          0x05*GDT_DESC_SIZE
+%define GDT_IDX_USER_DATA_DESC          0x06*GDT_DESC_SIZE
+%define GDT_IDX_VIDEO_DESC              0x07*GDT_DESC_SIZE
+%define GDT_IDX_IDLE_TASK               0x08*GDT_DESC_SIZE
+%define ADDR_PAGE_DIR			0x00027000
+%define PAGE_PRESRW                     0x03
+%define C_BG_BLACK                      (0x0 << 4)
+%define COL_SIZE                        80
+%define VIDEO_SCREEN			0xB8000
+
+;============
+;    TSS
+;============
+%define TSS_PREVIOUS_TASKLINK           0
+%define TSS_ESP0                        4
+%define TSS_SS0                         8
+%define TSS_ESP1                        12
+%define TSS_SS1                         16
+%define TSS_ESP2                        20
+%define TSS_SS2                         24
+%define TSS_CR3                         28
+%define TSS_EIP                         32
+%define TSS_EFLAGS                      36
+%define TSS_EAX                         40
+%define TSS_ECX                         44
+%define TSS_EDX                         48
+%define TSS_EBX                         52
+%define TSS_ESP                         56
+%define TSS_EBP                         60
+%define TSS_ESI                         64
+%define TSS_EDI                         68
+%define TSS_ES                          0x48
+%define TSS_CS                          0x4C
+%define TSS_SS                          0x50
+%define TSS_DS                          0x54
+%define TSS_FS                          0x58
+%define TSS_GS                          0x5C
+
+
+%define DIR_TAREA_IDLE                  0x10000
+
+extern GDT_DESC
+extern gdt_inicializar
+extern IDT_DESC
+extern idt_inicializar
+extern deshabilitar_pic
+extern resetear_pic
+extern habilitar_pic
+extern mmu_inicializar_dir_kernel 
+extern mmu_inicializar_dir_tarea 
+extern mmu_inicializar 
+extern print_int
+extern imprimir_pantalla
+extern tss_obtener
+
+

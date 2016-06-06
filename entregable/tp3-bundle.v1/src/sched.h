@@ -13,6 +13,10 @@
 #include "gdt.h"
 
 unsigned short sched_proximo_indice();
+unsigned short sched_cambia_tarea();
+void sched_correr_siguiente_tarea();
+void sched_iniciar_tarea(unsigned short gdt_idx, unsigned int queue_idx);
+void sched_detener_tarea(unsigned short gdt_idx);
 
 
 #endif	/* !__SCHED_H__ */
