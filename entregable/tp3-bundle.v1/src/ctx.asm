@@ -1,45 +1,3 @@
-; Si es una tarea la pila tiene que estar como sigue:
-
-; esp0 -> | CR3    |
-;         | DS     |
-;---------------------------
-;         | EDI    |
-;         | ESI    |
-;         | EBP0   |
-;         | ESP0   |
-;         | EBX    |    Lo de esta seccion es para el pushad/popad
-;         | EDX    |
-;         | ECX    |
-;         | EAX    |
-;----------------------------
-;         | EIP    |
-;         | CS     |
-;         | EFLAGS |
-;Si es de usuario necesita lo siguiente:
-;         | ESP    |
-;         | SS     |
-
-
-; 1: ts_idx de la tarea actual
-; 2: ts_idx de la tarea nueva
-; Suponemos que se llama desde una interrupcion y que se hizo un pushad
-%macro cambio_contexto 1
-    mov eax, ds
-    push eax
-    mov eax, cr3
-    push eax
-    mov esp, [ts_tareas + %1*TS_SIZE + TS_ESP0_OFFSET]
-    mov [tss_sistema + TSS_ESP0_OFFSET], esp
-    pop eax
-    mov cr3, eax
-    pop eax
-    mov ds, eax
-    mov es, eax
-    mov fs, eax
-    mov gs, eax
-    popad
-    iret
-%endmacro    
 
 %include "defines.mac"
 %define CTX_CR3_OFFSET          0
@@ -58,8 +16,8 @@
 %define CTX_ESP_OFFSET          52
 %define CTX_SS_OFFSET           56
 
-
-; void crear_contexto(ts* task, uint* codigo, uint* dirmapa)
+global crear_contexto_usr
+; void crear_contexto_usr(ts* task, uint* codigo, uint* dirmapa)
 %define task ebp+8
 %define codigo ebp+12
 %define dirmapa ebp+16

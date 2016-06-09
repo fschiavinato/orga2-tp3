@@ -6,7 +6,6 @@
 
 %include "imprimir.mac"
 %include "defines.mac"
-%include "ctx.asm"
 
 BITS 32
 

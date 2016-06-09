@@ -12,11 +12,15 @@
 #include "tss.h"
 #include "gdt.h"
 
+struct str_ts;
+
 unsigned short sched_proximo_indice();
 unsigned short sched_tarea_actual();
 void sched_correr_siguiente_tarea();
 void sched_iniciar_tarea(unsigned short gdt_idx, unsigned int queue_idx);
 void sched_detener_tarea(unsigned short gdt_idx);
+
+extern void crear_contexto_usr(struct str_ts* task, unsigned char* codigo, unsigned char* dirmapa);
 
 
 #endif	/* !__SCHED_H__ */

@@ -10,6 +10,7 @@
 #include "syscall.h" 
 
 void task() {
+  __asm __volatile("xchg %bx,%bx");
   __asm __volatile("nop\n");  
   __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");
   __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  

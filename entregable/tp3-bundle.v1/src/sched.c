@@ -20,17 +20,17 @@ typedef struct queue_t {
 
 
 queue run_queues[NUM_QUEUES] = {
-    {
+    [SCHED_QUEUE_IDX_SANAS] = {
         MAX_NUM_TAREAS_SANAS,
         0,
         (tarea[MAX_NUM_TAREAS_SANAS]){}
     },
-    {
+    [SCHED_QUEUE_IDX_JUGA] = {
         MAX_NUM_TAREAS_JUGA,
         0,
         (tarea[MAX_NUM_TAREAS_JUGA]){}
     },
-    {
+    [SCHED_QUEUE_IDX_JUGB] = {
         MAX_NUM_TAREAS_JUGB,
         0,
         (tarea[MAX_NUM_TAREAS_JUGB]){}
@@ -42,24 +42,35 @@ unsigned int current_queue = 0;
 unsigned char en_idle = 0;
 unsigned char parado = 0;
 
+void sched_inicializar() {
+	int i = 0;
+	for(; i < MAX_NUM_TAREAS_SANAS; i++) {
+		unsigned int ts_idx = run_queues[SCHED_QUEUE_IDX_SANAS].tareas[i].ts_idx;
+		crear_contexto_usr(&ts_tareas[ts_idx], (unsigned char*) DIR_PHY_CODIGO_SANA, (unsigned char*) DIR_PHY_MAPA);
+		run_queues[SCHED_QUEUE_IDX_SANAS].tareas[i].viva = TRUE;
+	}
+
+}
 
 unsigned short sched_proxima_tarea() {
     unsigned short res = TS_IDX_IDLE;
     current_queue = (current_queue+1) % NUM_QUEUES;
-    unsigned int iT = 0, iQ = 0;
-    unsigned char incQ;
+    unsigned int cT = 0, cQ = 0;
+    unsigned int iT = run_queues[current_queue].tarea_actual+1, iQ = current_queue;
 
     if(!parado) {
-        while(iQ < NUM_QUEUES && run_queues[current_queue+iQ].
-                tareas[(run_queues[current_queue].tarea_actual+1+iT) % run_queues[current_queue].cant].
-                viva == FALSE) {
-            incQ = ++iT / run_queues[current_queue + iQ].cant;
-            iT %= run_queues[current_queue + iQ].cant;
-            iQ += incQ;
+
+        while(cQ < NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE) {
+            
+            cQ += (++cT) / run_queues[iQ].cant;
+            cT %= run_queues[iQ].cant;
+            iQ = (current_queue+cQ) % NUM_QUEUES;
+            iT = (run_queues[iQ].tarea_actual+cT) % run_queues[iQ].cant;
+
         }
-        if(iQ < NUM_QUEUES) {
-            current_queue += iQ;
-            run_queues[current_queue].tarea_actual += iT+1;
+        if(cQ < NUM_QUEUES) {
+            current_queue = iQ;
+            run_queues[current_queue].tarea_actual = iT;
             res = run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].ts_idx;
         }
     }

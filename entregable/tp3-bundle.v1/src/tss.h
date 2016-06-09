@@ -58,6 +58,8 @@ typedef struct str_ts {
     unsigned int esp0;
 } ts;
 
+extern struct str_ts ts_tareas[];
+
 void tss_inicializar();
 
 #endif  /* !__TSS_H__ */

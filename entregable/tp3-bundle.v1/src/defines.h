@@ -49,20 +49,20 @@
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_OFF_NULL_DESC           (GDT_IDX_NULL_DESC      << 3)
+#define GDT_OFF_NULL_DESC           		(GDT_IDX_NULL_DESC      << 3)
 
 
 /* Parametros del gate en la gdt */
 
 #define IDT_INTERRUPT	                    (0x6 << 8) /*es un puerta de interrupcion*/
-#define IDT_TRAP		            (0x7 << 8) /*es una puerta de trampa*/
-#define IDT_TASK 		            (0x5 << 8) /*es una puerta de tareas*/
-#define IDT_32BITS		            (0x1 << 11)/*d*/
-#define IDT_16BITS		            (0x0 << 11)/*d*/
-#define IDT_USR0		            (0x0 << 13)/*dpl*/
-#define IDT_USR1		            (0x1 << 13)/*dpl*/
-#define IDT_USR2		            (0x2 << 13)/*dpl*/
-#define IDT_USR3		            (0x3 << 13)/*dpl*/
+#define IDT_TRAP		            		(0x7 << 8) /*es una puerta de trampa*/
+#define IDT_TASK 		            		(0x5 << 8) /*es una puerta de tareas*/
+#define IDT_32BITS		            		(0x1 << 11)/*d*/
+#define IDT_16BITS		            		(0x0 << 11)/*d*/
+#define IDT_USR0		            		(0x0 << 13)/*dpl*/
+#define IDT_USR1		            		(0x1 << 13)/*dpl*/
+#define IDT_USR2		            		(0x2 << 13)/*dpl*/
+#define IDT_USR3		            		(0x3 << 13)/*dpl*/
 #define IDT_PRESENT 	                    (0x1 << 15)/*esta presente*/
 
 /* Parametros del segmento en la gdt */
@@ -116,8 +116,8 @@
 
 /* Parametros de las entradas del directorio de paginas  */
 /* -------------------------------------------------------------------------- */
-#define PAGE_SIZE 		            0x1000
-#define ENTRIES_TABLE		            1024
+#define PAGE_SIZE 		            		0x1000
+#define ENTRIES_TABLE		            	1024
 #define PAGE_PRESRW                         0x03
 
 #define INICIO_PAGINAS_LIBRES	            0x100000 	
@@ -126,20 +126,20 @@
 
 #define PDE_INDEX(virtual)                  (virtual >> 22)
 #define PTE_INDEX(virtual)                  (virtual << 10) >> 22
-#define PDE_PRESENT(entry)	            (entry & 0x1)
-#define PTE_PRESENT(entry)	            (entry & 0x1)
+#define PDE_PRESENT(entry)	            	(entry & 0x1)
+#define PTE_PRESENT(entry)	            	(entry & 0x1)
 #define PDE_DIRECCION(entry)	            (entry & 0xFFFFF000)
-#define PG_READ 			    0x0
-#define PG_WRITE      		            0x2
-#define PG_USER 			    0x4
-#define PG_KERNEL      		            0x0
-#define PG_PRESENT         	            0x1
+#define PG_READ 			    			0x0
+#define PG_WRITE      		            	0x2
+#define PG_USER 			    			0x4
+#define PG_KERNEL      		            	0x0
+#define PG_PRESENT         	            	0x1
 
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 #define VIDEO_SCREEN                        0x000B8000 /* direccion fisica del buffer de video */
-#define ADDR_PAGE_DIR			    0x00027000 
-#define ADDR_PAGE_TABLE			    0x00028000
+#define ADDR_PAGE_DIR			    		0x00027000 
+#define ADDR_PAGE_TABLE			    		0x00028000
 #define NUM_TABLES_IDENTITY_MAPPING         0x01
 
 /* Scheduler */
@@ -148,5 +148,17 @@
 #define QUANTUM                             1
 #define NUM_QUEUES                          3
 #define TS_IDX_IDLE                         MAX_NUM_TAREAS
+#define SCHED_QUEUE_IDX_SANAS               0
+#define SCHED_QUEUE_IDX_JUGA                1
+#define SCHED_QUEUE_IDX_JUGB                2
+
+#define DIR_PHY_CODIGO_IDLE					0x10000
+#define DIR_PHY_CODIGO_SANA					DIR_PHY_CODIGO_IDLE + 1*PAGE_SIZE
+#define DIR_PHY_CODIGO_JUGA					DIR_PHY_CODIGO_IDLE + 2*PAGE_SIZE
+#define DIR_PHY_CODIGO_JUGB					DIR_PHY_CODIGO_IDLE + 3*PAGE_SIZE
+
+#define DIR_PHY_MAPA						0x400000
+
+
 
 #endif  /* !__DEFINES_H__ */
