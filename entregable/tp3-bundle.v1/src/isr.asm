@@ -6,6 +6,7 @@
 
 %include "imprimir.mac"
 %include "defines.mac"
+%include "ctx.asm"
 
 BITS 32
 
@@ -151,74 +152,16 @@ global _isr102
 
 _isr32:
     pushad
-    call sched_cambia_tarea
-    cmp eax, 0x0
-    je .fin_isr32
-
-    ; Lo hacemos a mano pues lo unico que tenemos que guardar es la pila y el eip. El resto esta en la pila por ser un llamado de interrupcion. Asi evitamos tener que guardar dos veces varias cosas. 
-    str eax
-    push eax
-    call tss_obtener
-    add esp, 4
-    mov ebx, eax
-    mov eax, ss
-    mov [ebx + TSS_SS], eax
-    mov [ebx + TSS_ESP], esp
-
-    mov [ebx+TSS_CS], cs
-    mov dword [ebx+TSS_EIP], .fin_isr32 ; Lo ponemos hacia alla asi cuando vuelve, lo hace y termina la interrupcion.
-
-
-    call sched_proximo_indice
-    xchg bx, bx
-    ltr ax
-    push eax
-    call tss_obtener
-    add esp, 4
-    mov ebx, eax
-    call sched_correr_siguiente_tarea
-
-    ; Ya tenemos en ebx la nueva tarea y ya guardamos el contexto de la tarea anterior. Ahora tenemos que recuperar el contexto de la nueva.
-
-    xor eax, eax ; Recuperamos los segmentos.
-    mov ax, [ebx+TSS_SS]
-    mov ss, eax
-    mov ax, [ebx+TSS_ES]
-    mov es, eax
-    mov ax, [ebx+TSS_DS]
-    mov ds, eax
-    mov ax, [ebx+TSS_FS]
-    mov fs, eax
-    mov ax, [ebx+TSS_GS]
-    mov gs, eax
-
-    mov esp, [ebx+TSS_ESP]
-
-    mov eax, [ebx+TSS_CR3] ; Recuperamos el cr3 antes de usar la pila.
-    mov cr3, eax
-
-    xor eax, eax
-    mov ax, [ebx+TSS_CS] 
-    push eax
-    mov eax, [ebx+TSS_EIP] 
-    push eax
-    mov eax, [ebx+TSS_EFLAGS] 
-    push eax
-    
-    ; restauramos los registros
-    mov eax, [ebx+TSS_EAX]
-    mov ecx, [ebx+TSS_ECX]
-    mov edx, [ebx+TSS_EDX]
-    mov esi, [ebx+TSS_ESI]
-    mov edi, [ebx+TSS_EDI]
-    mov ebx, [ebx+TSS_EBX]
-
-    popf ; Recuperamos los eflags.
-    retf ; Hacemos un ret far.
-
-.fin_isr32:
     call proximo_reloj
     call fin_intr_pic1
+    call sched_proxima_tarea
+    mov ebx, eax
+    call sched_tarea_actual
+    cmp eax, ebx
+    je .fin_isr32
+    cambio_contexto ebx
+
+.fin_isr32:
     popad
     iret
 

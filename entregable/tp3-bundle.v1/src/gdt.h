@@ -41,10 +41,8 @@ typedef struct str_gdt_entry2d {
 extern gdt_entry gdt[];
 extern gdt_descriptor GDT_DESC;
 
-extern struct str_tss tss_idle;
-extern struct str_tss tss_inicial;
+extern struct str_tss tss_sistema;
 
 void gdt_inicializar();
-unsigned int gdt_nueva_entrada();
 
 #endif  /* !__GDT_H__ */

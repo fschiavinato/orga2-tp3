@@ -101,7 +101,7 @@ gdt_entry gdt[GDT_COUNT_INIT] = {
         (unsigned char)     SEG_GRAN_1B,                /* g            */
         (unsigned char)     SEG_BASE_24_31(0xB8000),       /* base[31:24]  */
     },
-    [GDT_IDX_IDLE_TASK] = (gdt_entry) {
+    [GDT_IDX_TSS_SISTEMA] = (gdt_entry) {
         (unsigned short)    SEG_LIMIT_0_15(sizeof(struct str_tss)),     /* limit[0:15]  */ 
         (unsigned short)    0x0,                                        /* base[0:15]   */ 
         (unsigned char)     0x0,                                        /* base[23:16]  */  
@@ -127,15 +127,10 @@ gdt_descriptor GDT_DESC = {
 //Lo usamos para completar valores que no podemos completar con la inicializacion estática.
 void gdt_inicializar() {
     // GDT_IDLE_TASK
-    gdt_entry2d* gdt_idle = (gdt_entry2d*) &gdt[GDT_IDX_IDLE_TASK];
-    gdt_idle->lo = gdt_idle->lo | (SEG_BASE_0_15(&tss_idle) << 16);
-    gdt_idle->hi = gdt_idle->hi | SEG_BASE_16_23(&tss_idle) | (SEG_BASE_24_31(&tss_idle) << 24) ;
+    gdt_entry2d* gdte_sistema = (gdt_entry2d*) &gdt[GDT_IDX_TSS_SISTEMA];
+    gdte_sistema->lo = gdte_sistema->lo | (SEG_BASE_0_15(&tss_sistema) << 16);
+    gdte_sistema->hi = gdte_sistema->hi | SEG_BASE_16_23(&tss_sistema) | (SEG_BASE_24_31(&tss_sistema) << 24) ;
 
 }
 
-unsigned int gdt_nueva_entrada() {
-    GDT_DESC.gdt_length += sizeof(gdt_entry);
-    gdt_count++;
-    return gdt_count - 1;
-}
 
