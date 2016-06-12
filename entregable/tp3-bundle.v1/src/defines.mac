@@ -8,11 +8,18 @@
 %define GDT_IDX_USER_DATA_DESC                  0x06*GDT_DESC_SIZE
 %define GDT_IDX_VIDEO_DESC                      0x07*GDT_DESC_SIZE
 %define GDT_IDX_IDLE_TASK                       0x08*GDT_DESC_SIZE
-%define ADDR_PAGE_DIR			       		 	0x00027000
+%define ADDR_PAGE_DIR			       	0x00027000
 %define PAGE_PRESRW                             0x03
 %define C_BG_BLACK                              (0x0 << 4)
 %define COL_SIZE                                80
-%define VIDEO_SCREEN			        		0xB8000
+%define VIDEO_SCREEN			        0xB8000
+
+
+;=================
+;Selector Segmento
+;=================
+%define SEL_RPL_KERNEL                          0x0
+%define SEL_RPL_USER                            0x3
 
 ;============
 ;    TSS
@@ -75,7 +82,7 @@ extern print_int
 extern imprimir_pantalla
 extern sched_inicializar
 extern sched_proxima_tarea
-extern sched_tarea_actual
+extern sched_ts_tarea_actual
 extern tss_sistema
 extern ts_tareas
 
@@ -88,7 +95,7 @@ extern ts_tareas
 ;         | ESI    |
 ;         | EBP0   |
 ;         | ESP0   |
-;         | EBX    |    Lo de esta seccion es para el pushad/popad
+;         | EBX    |    Lo de esta seccion es para el pushad/popad.
 ;         | EDX    |
 ;         | ECX    |
 ;         | EAX    |
@@ -101,16 +108,20 @@ extern ts_tareas
 ;         | SS     |
 
 
-; 1: ts_idx de la tarea actual
-; 2: ts_idx de la tarea nueva
+; 1: esp0 de la tarea actual
+; 2: esp0 de la tarea nueva
 ; Suponemos que se llama desde una interrupcion y que se hizo un pushad
-%macro cambio_contexto 1
+%macro cambio_contexto 2
+    push %1
+    push %2
+    pop ecx 
+    pop ebx
     mov eax, ds
     push eax
     mov eax, cr3
     push eax
-    mov esp, [ts_tareas + %1*TS_SIZE + TS_ESP0_OFFSET]
-    mov [tss_sistema + TSS_ESP0_OFFSET], esp
+    mov [ebx+TS_ESP0_OFFSET], esp
+    mov esp, ecx
     pop eax
     mov cr3, eax
     pop eax

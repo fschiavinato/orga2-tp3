@@ -25,19 +25,23 @@ crear_contexto_usr:
     push ebp
     mov ebp, esp
     push ebx
+
     mov eax, [dirmapa]
     push eax
     mov eax, [codigo]
     push eax
     call mmu_inicializar_dir_tarea
+    add esp, 8
+
     mov ebx, eax
     call mmu_nueva_pila_kernel
     mov edx, eax
     sub eax, 60
-    mov dword [eax+CTX_SS_OFFSET], GDT_IDX_USER_DATA_DESC
+
+    mov dword [eax+CTX_SS_OFFSET], GDT_IDX_USER_DATA_DESC | SEL_RPL_USER
     mov dword [eax+CTX_ESP_OFFSET], DIR_LOG_PILA_TAREA
     mov dword [eax+CTX_EFLAGS_OFFSET], CTX_EFLAGS
-    mov dword [eax+CTX_CS_OFFSET], GDT_IDX_USER_CODE_DESC
+    mov dword [eax+CTX_CS_OFFSET], GDT_IDX_USER_CODE_DESC | SEL_RPL_USER
     mov dword [eax+CTX_EIP_OFFSET], DIR_LOG_CODIGO_TAREA
     mov dword [eax+CTX_EAX_OFFSET], 0x0
     mov dword [eax+CTX_ECX_OFFSET], 0x0
@@ -49,7 +53,8 @@ crear_contexto_usr:
     mov dword [eax+CTX_EDI_OFFSET], 0x0
     mov dword [eax+CTX_DS_OFFSET], GDT_IDX_USER_DATA_DESC
     mov [eax+CTX_CR3_OFFSET], ebx
-    mov [task+TS_ESP0_OFFSET], eax
+    mov ebx, [task]
+    mov [ebx+TS_ESP0_OFFSET], eax
     pop ebx
     pop ebp
     ret

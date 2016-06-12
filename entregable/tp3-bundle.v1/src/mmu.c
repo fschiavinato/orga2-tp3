@@ -79,13 +79,13 @@ unsigned int mmu_inicializar_dir_tarea( unsigned char* code, unsigned int dirmap
 	mmu_mapear_pagina(DIR_LOG_CODIGO_TAREA, (unsigned int) pdirectorio, dirmapa, PG_USER | PG_WRITE);
 	mmu_mapear_pagina(DIR_LOG_CODIGO_TAREA + PAGE_SIZE, (unsigned int) pdirectorio, dirmapa, PG_USER | PG_WRITE);
 	
-	mmu_mapear_pagina(DIR_LOG_CODIGO_TAREA - PAGE_SIZE, rcr3(), dirmapa, PG_KERNEL | PG_WRITE);
+	mmu_mapear_pagina(DIR_LOG_CODIGO_TAREA, rcr3(), dirmapa, PG_KERNEL | PG_WRITE);
 
 	for(i = 0; i < PAGE_SIZE; i++) {
 		pcodigo_destino[i] = code[i];
 	}
 
-	mmu_unmapear_pagina(DIR_LOG_CODIGO_TAREA - PAGE_SIZE, rcr3());
+	mmu_unmapear_pagina(DIR_LOG_CODIGO_TAREA, rcr3());
 
 	tlbflush();
 	return (unsigned int) pdirectorio;

@@ -55,7 +55,7 @@ typedef struct str_tss {
 } __attribute__((__packed__, aligned (8))) tss;
 
 typedef struct str_ts {
-    unsigned int esp0;
+    unsigned char* esp0;
 } ts;
 
 extern struct str_ts ts_tareas[];

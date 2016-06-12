@@ -44,47 +44,45 @@ unsigned char parado = 0;
 
 void sched_inicializar() {
 	int i = 0;
-	for(; i < MAX_NUM_TAREAS_SANAS; i++) {
-		unsigned int ts_idx = run_queues[SCHED_QUEUE_IDX_SANAS].tareas[i].ts_idx;
+        unsigned int ts_idx = TS_START_IDX_SANAS;
+	for(; i < MAX_NUM_TAREAS_SANAS; i++, ts_idx++) {
 		crear_contexto_usr(&ts_tareas[ts_idx], (unsigned char*) DIR_PHY_CODIGO_SANA, (unsigned char*) DIR_PHY_MAPA);
 		run_queues[SCHED_QUEUE_IDX_SANAS].tareas[i].viva = TRUE;
+		run_queues[SCHED_QUEUE_IDX_SANAS].tareas[i].ts_idx = ts_idx;
 	}
-
 }
 
-unsigned short sched_proxima_tarea() {
-    unsigned short res = TS_IDX_IDLE;
+unsigned char* sched_proxima_tarea() {
+    unsigned char* res = ts_tareas[TS_IDX_IDLE].esp0;
     current_queue = (current_queue+1) % NUM_QUEUES;
     unsigned int cT = 0, cQ = 0;
     unsigned int iT = run_queues[current_queue].tarea_actual+1, iQ = current_queue;
 
     if(!parado) {
-
-        while(cQ < NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE) {
-            
+        while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE) {
             cQ += (++cT) / run_queues[iQ].cant;
             cT %= run_queues[iQ].cant;
             iQ = (current_queue+cQ) % NUM_QUEUES;
-            iT = (run_queues[iQ].tarea_actual+cT) % run_queues[iQ].cant;
+            iT = (run_queues[iQ].tarea_actual+1+cT) % run_queues[iQ].cant;
 
         }
-        if(cQ < NUM_QUEUES) {
+        if(cQ <= NUM_QUEUES) {
             current_queue = iQ;
             run_queues[current_queue].tarea_actual = iT;
-            res = run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].ts_idx;
+            res = ts_tareas[run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].ts_idx].esp0;
         }
     }
     else {
-        res = sched_tarea_actual();
+        res = sched_ts_tarea_actual()->esp0;
     }
     return res;
 } 
 
-unsigned short sched_tarea_actual() {
+struct str_ts* sched_ts_tarea_actual() {
     unsigned short res = run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].ts_idx;
     if(en_idle || run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].viva == FALSE) 
         res = TS_IDX_IDLE;
-    return res;
+    return &ts_tareas[res];
 } 
 
 unsigned short sched_idle() {

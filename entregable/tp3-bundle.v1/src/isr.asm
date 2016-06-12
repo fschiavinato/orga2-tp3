@@ -153,12 +153,12 @@ _isr32:
     pushad
     call proximo_reloj
     call fin_intr_pic1
-    call sched_proxima_tarea
+    call sched_ts_tarea_actual
     mov ebx, eax
-    call sched_tarea_actual
-    cmp eax, ebx
+    call sched_proxima_tarea
+    cmp eax, [ebx+TS_ESP0_OFFSET]
     je .fin_isr32
-    cambio_contexto ebx
+    cambio_contexto ebx, eax
 
 .fin_isr32:
     popad
