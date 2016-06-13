@@ -44,19 +44,24 @@
 
 #define DIST_ABAJO(y)   (VIDEO_FILS - 1 - y)
 
+#define CURSOR_IDX_JUGA         0
+#define CURSOR_IDX_JUGB         1
+
 
 #include "colors.h"
 #include "defines.h"
+#include "game.h"
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
     unsigned char c;
     unsigned char a;
 } ca;
 
-typedef enum jugador_e {
-    jugador1,
-    jugador2
-} jugador;
+typedef struct pos_t {
+    unsigned int x;
+    unsigned int y;
+} pos;
+
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
 
@@ -66,6 +71,12 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 
 void print_int_sinattr(unsigned int n, unsigned int x, unsigned int y);
 
-void actualizar_vidas(int vidas, jugador j); 
+void actualizar_vidas(int vidas, int j); 
+
+void screen_quitar_cursor(int j);
+
+void screen_ubicar_cursor(int j, unsigned int x, unsigned int y);
+
+pos* screen_obtener_cursor(int j);
 
 #endif  /* !__SCREEN_H__ */

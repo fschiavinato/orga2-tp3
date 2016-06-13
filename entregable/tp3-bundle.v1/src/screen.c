@@ -8,6 +8,9 @@
 #include "screen.h"
 #include "colors.h"  
 
+pos cursores[CANT_JUGADORES];
+ca debajo_cursor[CANT_JUGADORES]; 
+
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     int i;
@@ -20,6 +23,17 @@ void print(const char * text, unsigned int x, unsigned int y, unsigned short att
             y++;
         }
     }
+}
+
+void print_char(ca* c , unsigned int x, unsigned int y) {
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    p[y][x].c = c->c ;
+    p[y][x].a = c->a;
+}
+
+ca* screen_mapa_obtener(unsigned int x, unsigned int y) {
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    return &p[x][y];
 }
 
 void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, unsigned short attr) {
@@ -104,21 +118,24 @@ void imprimir_pantalla(){
 
     print("vidas", VIDAS1_OFFSETX, VIDAS1_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
     print("vidas", VIDAS2_OFFSETX, VIDAS2_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
-    actualizar_vidas(20, jugador1);
-    actualizar_vidas(20, jugador2);
+    actualizar_vidas(20, JUGA);
+    actualizar_vidas(20, JUGB);
+
+    screen_ubicar_cursor(JUGA, POS_X_DEF_JUGA, POS_X_DEF_JUGA);
+    screen_ubicar_cursor(JUGB, POS_X_DEF_JUGB, POS_X_DEF_JUGB);
 
 }
 
-void actualizar_vidas(int vidas, jugador j) {
+void actualizar_vidas(int vidas, int j) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     switch(j) {
-        case jugador1:
+        case JUGA:
             p[VIDAS1_SCORE_OFFSETY][VIDAS1_SCORE_OFFSETX].c = ' ';
             p[VIDAS1_SCORE_OFFSETY][VIDAS1_SCORE_OFFSETX+1].c = ' ';
             print_int_sinattr(vidas, VIDAS1_SCORE_OFFSETX+1, VIDAS1_SCORE_OFFSETY);
 
             break;
-        case jugador2:
+        case JUGB:
             p[VIDAS2_SCORE_OFFSETY][VIDAS2_SCORE_OFFSETX].c = ' ';
             p[VIDAS2_SCORE_OFFSETY][VIDAS2_SCORE_OFFSETX+1].c = ' ';
             print_int_sinattr(vidas, VIDAS2_SCORE_OFFSETX+1, VIDAS2_SCORE_OFFSETY);
@@ -127,7 +144,46 @@ void actualizar_vidas(int vidas, jugador j) {
     }
 }
 
+void screen_quitar_cursor(int j) {
+    switch(j) {
+        case JUGA:
+            print_char(&debajo_cursor[CURSOR_IDX_JUGA], cursores[CURSOR_IDX_JUGA].x, cursores[CURSOR_IDX_JUGA].y);
+            break;
+        case JUGB:
+            print_char(&debajo_cursor[CURSOR_IDX_JUGB], cursores[CURSOR_IDX_JUGB].x, cursores[CURSOR_IDX_JUGB].y);
+            break;
+    }
 
+}
 
+void screen_ubicar_cursor(int j, unsigned int x, unsigned int y) {
 
+    unsigned int idx = 0;
+    switch(j) {
+        case JUGA:
+            idx = CURSOR_IDX_JUGA;
+            break;
+        case JUGB:
+            idx = CURSOR_IDX_JUGB;
+            break;
+    }
+    debajo_cursor[idx].c = screen_mapa_obtener(x, y)->c;
+    debajo_cursor[idx].a = screen_mapa_obtener(x, y)->a;
+    cursores[idx].x = x;
+    cursores[idx].y = y;
+}
+
+pos* screen_obtener_cursor(int j) {
+    pos* res = NULL;
+    switch(j) {
+        case JUGA:
+            res = &cursores[CURSOR_IDX_JUGA];
+            break;
+        case JUGB:
+            res = &cursores[CURSOR_IDX_JUGA];
+            break;
+    }
+
+    return res;
+}
 

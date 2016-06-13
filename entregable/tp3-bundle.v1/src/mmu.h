@@ -13,13 +13,12 @@
 #include "tss.h"
 #include "game.h"
 
-
-
 void mmu_inicializar();
 void mmu_inicializar_dir_kernel();
 unsigned int mmu_inicializar_dir_tarea();
 void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3,unsigned int fisica, unsigned char attr);
 void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3);
+unsigned char* mmu_dir_mapa(unsigned int x, unsigned int y);
 
 #endif	/* !__MMU_H__ */
 

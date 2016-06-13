@@ -7,32 +7,24 @@
 
 #include "sched.h"
 
-typedef struct tarea_t {
-    unsigned short ts_idx;
-    unsigned char viva;
-} tarea;
-
-typedef struct queue_t {
-    unsigned int cant;
-    unsigned int tarea_actual;
-    tarea* tareas;
-} queue;
-
 
 queue run_queues[NUM_QUEUES] = {
     [SCHED_QUEUE_IDX_SANAS] = {
         MAX_NUM_TAREAS_SANAS,
         0,
+        TS_START_IDX_SANAS,
         (tarea[MAX_NUM_TAREAS_SANAS]){}
     },
     [SCHED_QUEUE_IDX_JUGA] = {
         MAX_NUM_TAREAS_JUGA,
         0,
+        TS_START_IDX_JUGA,
         (tarea[MAX_NUM_TAREAS_JUGA]){}
     },
     [SCHED_QUEUE_IDX_JUGB] = {
         MAX_NUM_TAREAS_JUGB,
         0,
+        TS_START_IDX_JUGB,
         (tarea[MAX_NUM_TAREAS_JUGB]){}
     }
 };
@@ -43,13 +35,11 @@ unsigned char en_idle = 0;
 unsigned char parado = 0;
 
 void sched_inicializar() {
-	int i = 0;
-        unsigned int ts_idx = TS_START_IDX_SANAS;
-	for(; i < MAX_NUM_TAREAS_SANAS; i++, ts_idx++) {
-		crear_contexto_usr(&ts_tareas[ts_idx], (unsigned char*) DIR_PHY_CODIGO_SANA, (unsigned char*) DIR_PHY_MAPA);
-		run_queues[SCHED_QUEUE_IDX_SANAS].tareas[i].viva = TRUE;
-		run_queues[SCHED_QUEUE_IDX_SANAS].tareas[i].ts_idx = ts_idx;
-	}
+    int i = 0;
+    unsigned int ts_idx = TS_START_IDX_SANAS;
+    for(; i < MAX_NUM_TAREAS_SANAS; i++, ts_idx++) {
+        sched_correr_tarea(SCHED_QUEUE_IDX_SANAS, (unsigned char*) DIR_PHY_CODIGO_SANA, rand() % ANCHO_MAPA, rand() % ALTO_MAPA);
+    }
 }
 
 unsigned char* sched_proxima_tarea() {
@@ -79,11 +69,16 @@ unsigned char* sched_proxima_tarea() {
 } 
 
 struct str_ts* sched_ts_tarea_actual() {
-    unsigned short res = run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].ts_idx;
-    if(en_idle || run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].viva == FALSE) 
-        res = TS_IDX_IDLE;
-    return &ts_tareas[res];
+    tarea* t =  sched_info_tarea_actual();
+    return t != NULL? &ts_tareas[t->ts_idx]: &ts_tareas[TS_IDX_IDLE];
 } 
+
+tarea* sched_info_tarea_actual() {
+    tarea* res = &run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual];
+    if(en_idle || res->viva == FALSE) 
+        res = NULL;
+    return res;
+}
 
 unsigned short sched_idle() {
     en_idle = TRUE;
@@ -96,4 +91,42 @@ void sched_parar() {
 
 void sched_reanudar() {
     parado = FALSE;
+}
+
+void sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y) {
+    int i = 0;
+    for(; i < run_queues[idx_queue].cant && run_queues[idx_queue].tareas[i].viva == TRUE; i++);
+    if(i < run_queues[idx_queue].cant)
+    {
+        run_queues[idx_queue].tareas[i].ts_idx = run_queues[idx_queue].ts_start_idx + i;
+        run_queues[idx_queue].tareas[i].pos_x = x;
+        run_queues[idx_queue].tareas[i].pos_y = y;
+        crear_contexto_usr(&ts_tareas[run_queues[idx_queue].ts_start_idx + i], dir_phy_codigo, mmu_dir_mapa(x, y));
+        run_queues[idx_queue].tareas[i].viva = TRUE;
+    }
+
+}
+
+void sched_matar_tarea_actual() {
+    tarea* actual = sched_info_tarea_actual();
+    if(actual != NULL) {
+        actual->viva = FALSE;
+    }
+}
+
+
+// Funciones auxiliares.
+
+ 
+static unsigned long int next = 1;
+ 
+int rand( void ) // RAND_MAX assumed to be 32767
+{
+    next = next * 1103515245 + 12345;
+    return (unsigned int)(next / 65536) % 32768;
+}
+ 
+void srand( unsigned int seed )
+{
+    next = seed;
 }

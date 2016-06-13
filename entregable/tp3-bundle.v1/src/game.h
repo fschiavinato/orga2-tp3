@@ -13,6 +13,11 @@
 
 typedef enum direccion_e { IZQ = 0xAAA, DER = 0x441, ARB = 0xA33, ABA = 0x883  } direccion;
 
+typedef enum jugador_e {
+    JUGA = ID_CODE_JUGA,
+    JUGB = ID_CODE_JUGB
+} jugador;
+
 void game_lanzar(unsigned int jugador);
 
 void game_soy(unsigned int soy);

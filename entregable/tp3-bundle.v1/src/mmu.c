@@ -58,7 +58,6 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 	tlbflush();
 }
 
-
 unsigned int mmu_inicializar_dir_tarea( unsigned char* code, unsigned int dirmapa) {
 	unsigned int* pdirectorio = (unsigned int*) mmu_proxima_pagina_fisica_libre();
 	int i, j;
@@ -91,7 +90,6 @@ unsigned int mmu_inicializar_dir_tarea( unsigned char* code, unsigned int dirmap
 	return (unsigned int) pdirectorio;
 }
 
-
 void mmu_inicializar_dir_kernel() {
   unsigned int*  pdirectorio = (unsigned int*) ADDR_PAGE_DIR;
   unsigned int*  ptabla = (unsigned int*) ADDR_PAGE_TABLE;
@@ -108,4 +106,8 @@ void mmu_inicializar_dir_kernel() {
   	pdirectorio[i] = 0;
   }
   tlbflush();
+}
+
+unsigned char* mmu_dir_mapa(unsigned int x, unsigned int y) {
+    return (unsigned char*) (DIR_PHY_MAPA + x*PAGE_SIZE + y*PAGE_SIZE*ANCHO_MAPA);
 }

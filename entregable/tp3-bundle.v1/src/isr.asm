@@ -240,16 +240,15 @@ _isr102:
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;
 proximo_reloj:
-        pushad
-        inc DWORD [isrnumero]
-        mov ebx, [isrnumero]
-        cmp ebx, 0x4
-        jl .ok
-                mov DWORD [isrnumero], 0x0
-                mov ebx, 0
-        .ok:
-                add ebx, isrClock
-                imprimir_texto_mp ebx, 1, 0x0f, 49, 79
-                popad
-        ret
-        
+    pushad
+    inc DWORD [isrnumero]
+    mov ebx, [isrnumero]
+    cmp ebx, 0x4
+    jl .ok
+        mov DWORD [isrnumero], 0x0
+        mov ebx, 0
+    .ok:
+        add ebx, isrClock
+        imprimir_texto_mp ebx, 1, 0x0f, 49, 79
+        popad
+    ret

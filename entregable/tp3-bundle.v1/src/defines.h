@@ -32,6 +32,11 @@
 #define MAX_NUM_TAREAS_JUGA                 5
 #define MAX_NUM_TAREAS_JUGB                 5
 #define MAX_NUM_TAREAS                      MAX_NUM_TAREAS_SANAS+MAX_NUM_TAREAS_JUGA+MAX_NUM_TAREAS_JUGB
+#define POS_X_DEF_JUGA                      0
+#define POS_Y_DEF_JUGA                      0
+#define POS_X_DEF_JUGB                      0
+#define POS_Y_DEF_JUGB                      0
+#define CANT_JUGADORES                      2
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -148,6 +153,13 @@
 #define ADDR_PAGE_TABLE			    0x00028000
 #define NUM_TABLES_IDENTITY_MAPPING         0x01
 
+#define DIR_PHY_CODIGO_IDLE                 0x10000
+#define DIR_PHY_CODIGO_JUGA                 DIR_PHY_CODIGO_IDLE + 1*PAGE_SIZE
+#define DIR_PHY_CODIGO_JUGB                 DIR_PHY_CODIGO_IDLE + 2*PAGE_SIZE
+#define DIR_PHY_CODIGO_SANA                 DIR_PHY_CODIGO_IDLE + 3*PAGE_SIZE
+
+#define DIR_PHY_MAPA	                    0x400000
+
 /* Scheduler */
 /* -------------------------------------------------------------------------- */
 
@@ -161,13 +173,12 @@
 #define SCHED_QUEUE_IDX_JUGA                1
 #define SCHED_QUEUE_IDX_JUGB                2
 
-#define DIR_PHY_CODIGO_IDLE                 0x10000
-#define DIR_PHY_CODIGO_JUGA                 DIR_PHY_CODIGO_IDLE + 1*PAGE_SIZE
-#define DIR_PHY_CODIGO_JUGB                 DIR_PHY_CODIGO_IDLE + 2*PAGE_SIZE
-#define DIR_PHY_CODIGO_SANA                 DIR_PHY_CODIGO_IDLE + 3*PAGE_SIZE
+/* Juego */
+/* -------------------------------------------------------------------------- */
 
-#define DIR_PHY_MAPA	                    0x400000
-
-
+#define ANCHO_MAPA                          80
+#define ALTO_MAPA                           44
+#define ID_CODE_JUGA                        0x841                    
+#define ID_CODE_JUGB                        0x325
 
 #endif  /* !__DEFINES_H__ */
