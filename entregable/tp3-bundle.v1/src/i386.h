@@ -79,6 +79,86 @@ LS_INLINE unsigned int rcr4(void) {
     __asm __volatile("movl %%cr4,%0" : "=r" (cr4));
     return cr4;
 }
+LS_INLINE unsigned int reax(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%eax,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int rebx(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%ebx,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int recx(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%ecx,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int redx(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%edx,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int resi(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%esi,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int redi(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%edi,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int resp(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%esp,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int rebp(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%ebp,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int reip(void) {
+    unsigned int cr4;
+    __asm __volatile("movl %%eip,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned short rcs(void) {
+    unsigned short cr4;
+    __asm __volatile("movl %%cs,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned short rds(void) {
+    unsigned short cr4;
+    __asm __volatile("movl %%ds,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned short res(void) {
+    unsigned short cr4;
+    __asm __volatile("movl %%es,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned short rgs(void) {
+    unsigned short cr4;
+    __asm __volatile("movl %%gs,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned short rfs(void) {
+    unsigned short cr4;
+    __asm __volatile("movl %%fs,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned short rss(void) {
+    unsigned short cr4;
+    __asm __volatile("movl %%ss,%0" : "=r" (cr4));
+    return cr4;
+}
+LS_INLINE unsigned int rflags(void) {
+    unsigned int cr4;
+    __asm __volatile("push %%eax" "pushf" "pop %%eax" "movl %%eax, %0" "pop %%eax" : "=r" (cr4));
+    return cr4;
+}
 
  LS_INLINE void tlbflush(void) {
     unsigned int cr3;

@@ -25,7 +25,7 @@ queue run_queues[NUM_QUEUES] = {
         MAX_NUM_TAREAS_JUGB,
         0,
         TS_START_IDX_JUGB,
-        (tarea[MAX_NUM_TAREAS_JUGB]){}
+        (tarea[MAX_NUM_TAREAS_JUGB]){} //no deberia ser tareas[TS_START_IDX_JUGB]
     }
 };
 

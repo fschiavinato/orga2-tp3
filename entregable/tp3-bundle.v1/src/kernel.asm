@@ -39,7 +39,7 @@ start:
 
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0 
-
+     
     ; Habilitar A20
     call habilitar_A20
     
