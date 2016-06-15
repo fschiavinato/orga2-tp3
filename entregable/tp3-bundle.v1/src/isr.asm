@@ -14,7 +14,6 @@ sched_tarea_selector:   dw 0x00
 
 ;; PIC
 extern fin_intr_pic1
-;;extern eoi
 
 ;; Sched
 extern sched_proximo_indice
@@ -172,54 +171,68 @@ _isr33:
     pushad
     in al, KEYBOARD_PORT
 
-    mov ebx, 'w'
+    mov ebx, ENUM_DIR_ARB
+    mov ecx, ENUM_JUG_JUGA
     cmp al, KEY_W
-    je tecla_valida
+    je mover_cursor
 
-    mov ebx, 'a'
+    mov ebx, ENUM_DIR_IZQ
+    mov ecx, ENUM_JUG_JUGA
     cmp al, KEY_A
-    je tecla_valida
+    je mover_cursor
 
-    mov ebx, 's'
+    mov ebx, ENUM_DIR_ABA
+    mov ecx, ENUM_JUG_JUGA
     cmp al, KEY_S
-    je tecla_valida
+    je mover_cursor
 
-    mov ebx, 'd'
+    mov ebx, ENUM_DIR_DER
+    mov ecx, ENUM_JUG_JUGA
     cmp al, KEY_D
-    je tecla_valida
+    je mover_cursor
 
     mov ebx, 'L'
     cmp al, KEY_LSHIFT
-    je tecla_valida
+    je lanzar_tarea
 
-    mov ebx, 'i'
+    mov ebx, ENUM_DIR_ARB
+    mov ecx, ENUM_JUG_JUGB
     cmp al, KEY_I
-    je tecla_valida
+    je mover_cursor
 
-    mov ebx, 'k'
+    mov ebx, ENUM_DIR_IZQ
+    mov ecx, ENUM_JUG_JUGB
     cmp al, KEY_K
-    je tecla_valida
+    je mover_cursor
 
-    mov ebx, 'j'
+    mov ebx, ENUM_DIR_ABA
+    mov ecx, ENUM_JUG_JUGB
     cmp al, KEY_J
-    je tecla_valida
+    je mover_cursor
 
-    mov ebx, 'l'
+    mov ebx, ENUM_DIR_DER
+    mov ecx, ENUM_JUG_JUGB
     cmp al, KEY_L
-    je tecla_valida
+    je mover_cursor
 
     mov ebx, 'R'
     cmp al, KEY_RSHIFT
-    je tecla_valida
+    je lanzar_tarea
 
 fin_isr33:
     call fin_intr_pic1
     popad
     iret
 
-tecla_valida:
-    mov [0xb809e], bl
+mover_cursor:
+    push ebx
+    push ecx
+    call game_mover_cursor
+    add esp, 8
     jmp fin_isr33        
+
+lanzar_tarea:
+    jmp fin_isr33
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;

@@ -9,43 +9,48 @@
 #define __SCREEN_H__
 
 /* Definicion de la pantalla */
-#define VIDEO_FILS 50
-#define VIDEO_COLS 80
+#define VIDEO_FILS                      50
+#define VIDEO_COLS                      80
 
-#define BORDE_SUPERIOR_ANCHO    1
-#define BORDE_SUPERIOR_COLOR    (ca) {0x20, 0x0F}
-#define BORDE_INFERIOR_ANCHO    5
-#define BORDE_INFERIOR_COLOR    (ca) {0x20, 0x0F}
-#define MARCADOR1_BOX_OFFSETX    48
-#define MARCADOR1_BOX_ANCHO      6
-#define MARCADOR1_BOX_COLOR     (ca) {0x20, C_BG_BLUE | C_FG_WHITE} // fondo azul, letras blancas.
-#define MARCADOR2_BOX_OFFSETX    (48+MARCADOR1_BOX_ANCHO)
-#define MARCADOR2_BOX_ANCHO      6
-#define MARCADOR2_BOX_COLOR     (ca) {0x20, C_BG_RED | C_FG_WHITE} // fondo rojo, letras blancas.
+#define BORDE_SUPERIOR_ANCHO            1
+#define BORDE_SUPERIOR_COLOR            (ca) {0x20, 0x0F}
+#define BORDE_INFERIOR_ANCHO            5
+#define BORDE_INFERIOR_COLOR            (ca) {0x20, 0x0F}
+#define MARCADORA_BOX_OFFSETX           48
+#define MARCADORA_BOX_ANCHO             6
+#define MARCADORA_BOX_COLOR             (ca) {0x20, C_BG_BLUE | C_FG_WHITE} // fondo azul, letras blancas.
+#define MARCADORB_BOX_OFFSETX           (48+MARCADORA_BOX_ANCHO)
+#define MARCADORB_BOX_ANCHO             6
+#define MARCADORB_BOX_COLOR             (ca) {0x20, C_BG_RED | C_FG_WHITE} // fondo rojo, letras blancas.
 
-#define RELOJES1_OFFSETX        3
-#define RELOJES1_OFFSETY        DIST_ABAJO(3)
-#define RELOJES2_OFFSETY        DIST_ABAJO(3)
-#define RELOJES2_OFFSETX        23
-#define RELOJESS_OFFSETX        3
-#define RELOJESS_OFFSETY        DIST_ABAJO(1)
-#define ESPACIO_ENTRE_RELOJES   1
-#define CANT_RELOJES_JUG        5
-#define CANT_RELOJES_SAN        15
+#define RELOJESA_OFFSETX                3
+#define RELOJESA_OFFSETY                DIST_ABAJO(3)
+#define RELOJESB_OFFSETY                DIST_ABAJO(3)
+#define RELOJESB_OFFSETX                23
+#define RELOJESS_OFFSETX                3
+#define RELOJESS_OFFSETY                DIST_ABAJO(1)
+#define ESPACIO_ENTRE_RELOJES           1
+#define CANT_RELOJES_JUG                5
+#define CANT_RELOJES_SAN                15
 
-#define VIDAS1_OFFSETX          41
-#define VIDAS1_OFFSETY          DIST_ABAJO(3)
-#define VIDAS1_SCORE_OFFSETX    (VIDAS1_OFFSETX+1)
-#define VIDAS1_SCORE_OFFSETY    (VIDAS1_OFFSETY+2)
-#define VIDAS2_OFFSETX          62
-#define VIDAS2_OFFSETY          DIST_ABAJO(3)
-#define VIDAS2_SCORE_OFFSETX    (VIDAS2_OFFSETX+1)
-#define VIDAS2_SCORE_OFFSETY    (VIDAS2_OFFSETY+2)
+#define VIDASA_OFFSETX                  41
+#define VIDASA_OFFSETY                  DIST_ABAJO(3)
+#define VIDASA_SCORE_OFFSETX            (VIDASA_OFFSETX+1)
+#define VIDASA_SCORE_OFFSETY            (VIDASA_OFFSETY+2)
+#define VIDASB_OFFSETX                  62
+#define VIDASB_OFFSETY                  DIST_ABAJO(3)
+#define VIDASB_SCORE_OFFSETX            (VIDASB_OFFSETX+1)
+#define VIDASB_SCORE_OFFSETY            (VIDASB_OFFSETY+2)
 
-#define DIST_ABAJO(y)   (VIDEO_FILS - 1 - y)
+#define DIST_ABAJO(y)                   (VIDEO_FILS - 1 - y)
 
-#define CURSOR_IDX_JUGA         0
-#define CURSOR_IDX_JUGB         1
+#define CURSOR_IDX_JUGA                 0
+#define CURSOR_IDX_JUGB                 1
+
+#define CURSOR_POS_DEF_JUGA            ((pos){19,22})
+#define CURSOR_CA_JUGA                 (ca){'*', C_FG_BLACK}
+#define CURSOR_POS_DEF_JUGB            ((pos){59,22})
+#define CURSOR_CA_JUGB                 (ca){'*', C_FG_BLACK}
 
 
 #include "colors.h"
@@ -77,6 +82,8 @@ void screen_quitar_cursor(int j);
 
 void screen_ubicar_cursor(int j, unsigned int x, unsigned int y);
 
-pos* screen_obtener_cursor(int j);
+pos* screen_obtener_pos_cursor(int j);
+
+unsigned int screen_obtener_idx_cursor(int jug);
 
 #endif  /* !__SCREEN_H__ */

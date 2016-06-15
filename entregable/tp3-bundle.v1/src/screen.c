@@ -8,8 +8,24 @@
 #include "screen.h"
 #include "colors.h"  
 
-pos cursores[CANT_JUGADORES];
-ca debajo_cursor[CANT_JUGADORES]; 
+typedef struct cursor_t {
+    pos posicion;
+    ca visible;
+    ca abajo; // guardamos lo que está debajo del cursor.
+} cursor;
+
+cursor cursores[CANT_JUGADORES] = {
+    [CURSOR_IDX_JUGA] = {
+        CURSOR_POS_DEF_JUGA,
+        CURSOR_CA_JUGA,
+        CURSOR_CA_JUGA
+    },
+    [CURSOR_IDX_JUGB] = {
+        CURSOR_POS_DEF_JUGB,
+        CURSOR_CA_JUGB,
+        CURSOR_CA_JUGB
+    }
+};
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
@@ -25,15 +41,20 @@ void print(const char * text, unsigned int x, unsigned int y, unsigned short att
     }
 }
 
-void print_char(ca* c , unsigned int x, unsigned int y) {
+void print_char(const ca* ch , unsigned int x, unsigned int y) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-    p[y][x].c = c->c ;
-    p[y][x].a = c->a;
+    p[y][x].c = ch->c;
+    p[y][x].a = ch->a;
 }
 
 ca* screen_mapa_obtener(unsigned int x, unsigned int y) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-    return &p[x][y];
+    return &p[y][x];
+}
+
+
+void screen_mapa_imprimir(const ca* ch, unsigned int x, unsigned int y) {
+    print_char(ch, x, y + BORDE_SUPERIOR_ANCHO);
 }
 
 void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, unsigned short attr) {
@@ -91,24 +112,24 @@ void imprimir_pantalla(){
 
     // Dibujamos los marcadores.
     for(i = 0; i < BORDE_INFERIOR_ANCHO; i++) {
-        for(j = 0; j < MARCADOR1_BOX_ANCHO; j++)
-            p[VIDEO_FILS - 1 - i][MARCADOR1_BOX_OFFSETX + j] = MARCADOR1_BOX_COLOR;
+        for(j = 0; j < MARCADORA_BOX_ANCHO; j++)
+            p[VIDEO_FILS - 1 - i][MARCADORA_BOX_OFFSETX + j] = MARCADORA_BOX_COLOR;
 
-        for(j = 0; j < MARCADOR2_BOX_ANCHO; j++)
-            p[VIDEO_FILS - 1 - i][MARCADOR2_BOX_OFFSETX + j] = MARCADOR2_BOX_COLOR;
+        for(j = 0; j < MARCADORB_BOX_ANCHO; j++)
+            p[VIDEO_FILS - 1 - i][MARCADORB_BOX_OFFSETX + j] = MARCADORB_BOX_COLOR;
     }
     
     // Dibujamos los relojes.
 
     for(i = 0; i < CANT_RELOJES_JUG; i++)
-        p[RELOJES1_OFFSETY][RELOJES1_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
+        p[RELOJESA_OFFSETY][RELOJESA_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
 
-    print("<A", RELOJES1_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1), RELOJES1_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
+    print("<A", RELOJESA_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1), RELOJESA_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
     
     for(i = 0; i < CANT_RELOJES_JUG; i++)
-        p[RELOJES2_OFFSETY][RELOJES2_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
+        p[RELOJESB_OFFSETY][RELOJESB_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
 
-    print("B>", RELOJES2_OFFSETX - (ESPACIO_ENTRE_RELOJES + 1) - 1, RELOJES2_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
+    print("B>", RELOJESB_OFFSETX - (ESPACIO_ENTRE_RELOJES + 1) - 1, RELOJESB_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
 
     for(i = 0; i < CANT_RELOJES_SAN; i++)
         p[RELOJESS_OFFSETY][RELOJESS_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
@@ -116,74 +137,90 @@ void imprimir_pantalla(){
     // Imprimimos las vidas
     
 
-    print("vidas", VIDAS1_OFFSETX, VIDAS1_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
-    print("vidas", VIDAS2_OFFSETX, VIDAS2_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
+    print("vidas", VIDASA_OFFSETX, VIDASA_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
+    print("vidas", VIDASB_OFFSETX, VIDASB_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
     actualizar_vidas(20, JUGA);
     actualizar_vidas(20, JUGB);
 
-    screen_ubicar_cursor(JUGA, POS_X_DEF_JUGA, POS_X_DEF_JUGA);
-    screen_ubicar_cursor(JUGB, POS_X_DEF_JUGB, POS_X_DEF_JUGB);
-
+    screen_ubicar_cursor(JUGA, CURSOR_POS_DEF_JUGA.x, CURSOR_POS_DEF_JUGA.y);
+    screen_ubicar_cursor(JUGB, CURSOR_POS_DEF_JUGB.x, CURSOR_POS_DEF_JUGB.y);
 }
 
 void actualizar_vidas(int vidas, int j) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    unsigned register int offset_x = 0;
+    unsigned register int offset_y = 0;
     switch(j) {
         case JUGA:
-            p[VIDAS1_SCORE_OFFSETY][VIDAS1_SCORE_OFFSETX].c = ' ';
-            p[VIDAS1_SCORE_OFFSETY][VIDAS1_SCORE_OFFSETX+1].c = ' ';
-            print_int_sinattr(vidas, VIDAS1_SCORE_OFFSETX+1, VIDAS1_SCORE_OFFSETY);
+            offset_x = VIDASA_SCORE_OFFSETX;
+            offset_y = VIDASA_SCORE_OFFSETY;
 
             break;
         case JUGB:
-            p[VIDAS2_SCORE_OFFSETY][VIDAS2_SCORE_OFFSETX].c = ' ';
-            p[VIDAS2_SCORE_OFFSETY][VIDAS2_SCORE_OFFSETX+1].c = ' ';
-            print_int_sinattr(vidas, VIDAS2_SCORE_OFFSETX+1, VIDAS2_SCORE_OFFSETY);
-
+            offset_x = VIDASB_SCORE_OFFSETX;
+            offset_y = VIDASB_SCORE_OFFSETY;
             break;
+    }
+    p[offset_y][offset_x].c = ' ';
+    p[offset_y][offset_x+1].c = ' ';
+    print_int_sinattr(vidas, offset_x+1, offset_y);
+}
+
+void screen_quitar_cursor(int jug) {
+    unsigned int idx = screen_obtener_idx_cursor(jug);
+    unsigned int i = 0;
+    for(; i < CANT_JUGADORES && (cursores[i].posicion.x != cursores[idx].posicion.x || cursores[i].posicion.y != cursores[idx].posicion.y || i == idx); i++);
+    if(i == CANT_JUGADORES) {
+        screen_mapa_imprimir(&cursores[idx].abajo, cursores[idx].posicion.x, cursores[idx].posicion.y);
+    }
+    else {
+        screen_mapa_imprimir(&cursores[i].visible, cursores[idx].posicion.x, cursores[idx].posicion.y);
     }
 }
 
-void screen_quitar_cursor(int j) {
-    switch(j) {
-        case JUGA:
-            print_char(&debajo_cursor[CURSOR_IDX_JUGA], cursores[CURSOR_IDX_JUGA].x, cursores[CURSOR_IDX_JUGA].y);
-            break;
-        case JUGB:
-            print_char(&debajo_cursor[CURSOR_IDX_JUGB], cursores[CURSOR_IDX_JUGB].x, cursores[CURSOR_IDX_JUGB].y);
-            break;
-    }
+void screen_ubicar_cursor(int jug, unsigned int x, unsigned int y) {
 
+    unsigned int idx = screen_obtener_idx_cursor(jug);
+    int i = 0;
+    for(; i < CANT_JUGADORES && (cursores[i].posicion.x != x || cursores[i].posicion.y != y || i == idx); i++);
+    if(i == CANT_JUGADORES) {
+        cursores[idx].abajo.c = screen_mapa_obtener(x, y)->c;
+        cursores[idx].abajo.a = screen_mapa_obtener(x, y)->a;
+        cursores[idx].visible.a = screen_mapa_obtener(x, y)->a;
+    }
+    else {
+        cursores[idx].abajo.c = cursores[i].abajo.c;
+        cursores[idx].abajo.a = cursores[i].abajo.a;
+        cursores[idx].visible.a = cursores[i].visible.a;
+    }
+    cursores[idx].posicion.x = x;
+    cursores[idx].posicion.y = y;
+    screen_mapa_imprimir(&cursores[idx].visible, x, y);
 }
 
-void screen_ubicar_cursor(int j, unsigned int x, unsigned int y) {
-
-    unsigned int idx = 0;
-    switch(j) {
-        case JUGA:
-            idx = CURSOR_IDX_JUGA;
-            break;
-        case JUGB:
-            idx = CURSOR_IDX_JUGB;
-            break;
-    }
-    debajo_cursor[idx].c = screen_mapa_obtener(x, y)->c;
-    debajo_cursor[idx].a = screen_mapa_obtener(x, y)->a;
-    cursores[idx].x = x;
-    cursores[idx].y = y;
-}
-
-pos* screen_obtener_cursor(int j) {
+pos* screen_obtener_pos_cursor(int jug) {
     pos* res = NULL;
-    switch(j) {
+    switch(jug) {
         case JUGA:
-            res = &cursores[CURSOR_IDX_JUGA];
+            res = &cursores[CURSOR_IDX_JUGA].posicion;
             break;
         case JUGB:
-            res = &cursores[CURSOR_IDX_JUGA];
+            res = &cursores[CURSOR_IDX_JUGB].posicion;
             break;
     }
+    return res;
+}
 
+unsigned int screen_obtener_idx_cursor(int jug) {
+    unsigned int res = 0;
+    switch(jug) {
+        case JUGA:
+            res = CURSOR_IDX_JUGA;
+            break;
+        case JUGB:
+            res = CURSOR_IDX_JUGB;
+            break;
+    }
     return res;
 }
 

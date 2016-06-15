@@ -32,10 +32,6 @@
 #define MAX_NUM_TAREAS_JUGA                 5
 #define MAX_NUM_TAREAS_JUGB                 5
 #define MAX_NUM_TAREAS                      MAX_NUM_TAREAS_SANAS+MAX_NUM_TAREAS_JUGA+MAX_NUM_TAREAS_JUGB
-#define POS_X_DEF_JUGA                      0
-#define POS_Y_DEF_JUGA                      0
-#define POS_X_DEF_JUGB                      0
-#define POS_Y_DEF_JUGB                      0
 #define CANT_JUGADORES                      2
 
 /* Indices en la gdt */
