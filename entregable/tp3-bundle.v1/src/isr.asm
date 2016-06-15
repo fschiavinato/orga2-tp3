@@ -226,6 +226,7 @@ mover_cursor:
 lanzar_tarea:
     push ecx
     call game_lanzar
+    add esp, 4
     jmp fin_isr33
 ;;
 ;; Rutinas de atención de las SYSCALLS

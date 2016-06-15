@@ -64,6 +64,18 @@ void screen_mapa_imprimir(const ca* ch, unsigned int x, unsigned int y) {
     print_char(ch, x, y + BORDE_SUPERIOR_ANCHO);
 }
 
+void screen_ubicar_debajo_cursores(const ca* ch, unsigned int x, unsigned int y) {
+    int i = 0;
+    for(; i < CANT_JUGADORES; i++) {
+        if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y) {
+            visual_jugadores[i].cursor.abajo.c = ch->c; 
+            visual_jugadores[i].cursor.abajo.a = ch->a;
+        }  
+
+    }
+
+}
+
 void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     int i;
@@ -212,16 +224,20 @@ jugador_visual* screen_obtener_visual_jugador(int jug) {
 
 void screen_mapa_imprimir_pagina(int jug, unsigned int x, unsigned int y) {
     screen_mapa_imprimir(&screen_obtener_visual_jugador(jug)->pagina_mapeada, x, y);
+    screen_ubicar_debajo_cursores(&screen_obtener_visual_jugador(jug)->pagina_mapeada, x, y);
 }
 
 void screen_mapa_imprimir_tarea_infectadora(int jug, unsigned int x, unsigned int y) {
     screen_mapa_imprimir(&screen_obtener_visual_jugador(jug)->tarea_infectadora, x, y);
+    screen_ubicar_debajo_cursores(&screen_obtener_visual_jugador(jug)->tarea_infectadora, x, y);
 }
 
 void screen_mapa_imprimir_tarea_infectada(int jug, unsigned int x, unsigned int y) {
     screen_mapa_imprimir(&screen_obtener_visual_jugador(jug)->tarea_infectada, x, y);
+    screen_ubicar_debajo_cursores(&screen_obtener_visual_jugador(jug)->tarea_infectada, x, y);
 }
 
 void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
     screen_mapa_imprimir(&CA_TAREA_SANA, x, y);
+    screen_ubicar_debajo_cursores(&CA_TAREA_SANA, x, y);
 }
