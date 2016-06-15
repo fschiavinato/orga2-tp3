@@ -45,7 +45,9 @@ global _isr%1
 _isr%1:
     mov eax, %1
     imprimir_texto_mp isr%1_msg, isr%1_len, 0x07, 0, 0
-    jmp $
+    call sched_matar_tarea_actual
+    iret
+    
 
 %endmacro
 
@@ -233,16 +235,37 @@ lanzar_tarea:
 ;; -------------------------------------------------------------------------- ;;
 _isr102:
     pushad
-    mov eax, 0x42
+    cmp eax, INT_DONDE
+    je int_donde
+    cmp eax, INT_SOY
+    je int_soy
+    cmp eax, INT_MAPEAR
+    je int_mapear
+
+fin_isr102:
     popad
     iret
 
-%define DONDE  0x124
-%define SOY    0xA6A
-%define MAPEAR 0xFF3
+int_donde:
+    push ebx
+    call game_donde
+    add esp, 4
+    jmp fin_isr102
 
-%define VIRUS_ROJO 0x841
-%define VIRUS_AZUL 0x325
+int_soy:
+    push ebx
+    call game_soy
+    add esp, 4
+    jmp fin_isr102
+
+int_mapear:
+    push ecx
+    push ebx
+    call game_mapear
+    add esp, 8
+    jmp fin_isr102
+
+
 
 
 ;; Funciones Auxiliares

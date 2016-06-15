@@ -111,6 +111,7 @@ BITS 32
     call habilitar_pic
 
     ; Cargar tarea inicial
+    call sched_idle
     call sched_inicializar 
     ; Habilitar interrupciones
     sti

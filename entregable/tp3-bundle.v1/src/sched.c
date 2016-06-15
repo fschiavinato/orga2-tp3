@@ -66,6 +66,10 @@ unsigned char* sched_proxima_tarea() {
             current_queue = iQ;
             run_queues[current_queue].tarea_actual = iT;
             res = ts_tareas[run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].ts_idx].esp0;
+            en_idle = 0;
+        }
+        else {
+            en_idle = 1;
         }
     }
     else {
@@ -81,14 +85,14 @@ struct str_ts* sched_ts_tarea_actual() {
 
 tarea* sched_info_tarea_actual() {
     tarea* res = &run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual];
-    if(en_idle || res->viva == FALSE) 
+    if(en_idle == TRUE) 
         res = NULL;
     return res;
 }
 
-unsigned short sched_idle() {
+unsigned char* sched_idle() {
     en_idle = TRUE;
-    return TS_IDX_IDLE;
+    return ts_tareas[TS_IDX_IDLE].esp0;
 }
 
 void sched_parar() {
@@ -128,8 +132,23 @@ void sched_matar_tarea_actual() {
     if(actual != NULL) {
         actual->viva = FALSE;
     }
+    sched_idle();
+    screen_actualizar_puntajes();
 }
 
+void sched_infectar(int jug) {
+    sched_info_tarea_actual()->virus = jug;
+}
+
+unsigned int sched_infectados(int jug) {
+    int i, j;
+    unsigned int cant;
+    for(i = 0; i < NUM_QUEUES; i++) 
+        for(j = 0; j < run_queues[i].cant; i++) 
+            if(run_queues[i].tareas[j].viva == TRUE && run_queues[i].tareas[j].virus == jug)
+                cant++;
+    return cant;
+}
 
 // Funciones auxiliares.
 

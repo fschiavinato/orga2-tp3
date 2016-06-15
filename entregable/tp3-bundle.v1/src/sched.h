@@ -18,6 +18,7 @@ struct str_ts;
 typedef struct tarea_t {
     unsigned short ts_idx;
     unsigned char viva;
+    unsigned int virus;
     unsigned int pos_x;
     unsigned int pos_y;
 } tarea;
@@ -30,14 +31,27 @@ typedef struct queue_t {
 } queue;
 
 unsigned char* sched_proximo_indice();
+
 struct str_ts* sched_ts_tarea_actual();
+
 tarea* sched_info_tarea_actual();
+
+void sched_infectar(int jug);
+
+unsigned int sched_infectados(int jug);
+
+unsigned char* sched_idle();
+
 void sched_correr_siguiente_tarea();
+
 unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y);
+
 void sched_matar_tarea_actual();
 
 extern void crear_contexto_usr(struct str_ts* task, unsigned char* codigo, unsigned char* dirmapa);
+
 int rand();
+
 void srand(unsigned int seed);
 
 #endif	/* !__SCHED_H__ */

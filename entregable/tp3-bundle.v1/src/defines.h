@@ -33,6 +33,7 @@
 #define MAX_NUM_TAREAS_JUGB                 5
 #define MAX_NUM_TAREAS                      MAX_NUM_TAREAS_SANAS+MAX_NUM_TAREAS_JUGA+MAX_NUM_TAREAS_JUGB
 #define CANT_JUGADORES                      2
+#define CANT_VIDAS                          20
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -129,6 +130,8 @@
 
 #define INICIO_PAGINAS_LIBRES	            0x100000 	
 #define DIR_LOG_CODIGO_TAREA	            0x08000000
+#define DIR_LOG_PAGINA_TAREA	            DIR_LOG_CODIGO_TAREA + PAGE_SIZE
+#define DIR_LOG_AFUERA_MEMORIA              DIR_LOG_CODIGO_TAREA + 2*PAGE_SIZE
 
 
 #define PDE_INDEX(virtual)                  (virtual >> 22)

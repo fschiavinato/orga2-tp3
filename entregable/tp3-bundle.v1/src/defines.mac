@@ -77,6 +77,11 @@
 %define DIR_LOG_CODIGO_TAREA                   	0x8000000
 %define DIR_LOG_PILA_TAREA                     	DIR_LOG_CODIGO_TAREA + PAGE_SIZE
 
+
+%define INT_DONDE                               0x124
+%define INT_SOY                                 0xA6A
+%define INT_MAPEAR                              0xFF3
+
 extern GDT_DESC
 extern gdt_inicializar_tss
 extern IDT_DESC
@@ -93,10 +98,15 @@ extern imprimir_pantalla
 extern sched_inicializar
 extern sched_proxima_tarea
 extern sched_ts_tarea_actual
+extern sched_idle
+extern sched_matar_tarea_actual
 extern tss_sistema
 extern ts_tareas
 extern game_mover_cursor
 extern game_lanzar
+extern game_donde
+extern game_soy
+extern game_mapear
 
 ; Si es una tarea la pila tiene que estar como sigue:
 
