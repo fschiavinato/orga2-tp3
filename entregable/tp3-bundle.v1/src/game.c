@@ -9,6 +9,7 @@
 void game_mover_cursor(int jugador, direccion dir) {
     unsigned int desp_x = 0;
     unsigned int desp_y = 0;
+    pos* pos_cursor;
     switch(dir) {
         case IZQ:
             desp_x = -1;
@@ -27,9 +28,9 @@ void game_mover_cursor(int jugador, direccion dir) {
     switch(jugador) {
         case ID_CODE_JUGA:
         case ID_CODE_JUGB:
-            pos* pos_cursor = screen_obtener_cursor(jugador);
+            pos_cursor = screen_obtener_cursor(jugador);
             screen_quitar_cursor(jugador);
-            screen_ubicar_cursor(jugador, pos->x + desp_x , pos->y + desp_y);
+            screen_ubicar_cursor(jugador, pos_cursor->x + desp_x , pos_cursor->y + desp_y);
     }
 }
 

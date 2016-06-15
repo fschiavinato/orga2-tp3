@@ -7,12 +7,12 @@
 %define GDT_IDX_USER_CODE_DESC                  0x05*GDT_DESC_SIZE
 %define GDT_IDX_USER_DATA_DESC                  0x06*GDT_DESC_SIZE
 %define GDT_IDX_VIDEO_DESC                      0x07*GDT_DESC_SIZE
-%define GDT_IDX_IDLE_TASK                       0x08*GDT_DESC_SIZE
-%define ADDR_PAGE_DIR			       	        0x00027000
+%define GDT_IDX_TSS_SISTEMA                     0x08*GDT_DESC_SIZE
+%define ADDR_PAGE_DIR			       	0x00027000
 %define PAGE_PRESRW                             0x03
 %define C_BG_BLACK                              (0x0 << 4)
 %define COL_SIZE                                80
-%define VIDEO_SCREEN			                0xB8000
+%define VIDEO_SCREEN			        0xB8000
 
 
 ;=================
@@ -61,14 +61,16 @@
 %define TS_SIZE                                	4
 %define TS_ESP0_OFFSET                         	0
 
+
 %define CTX_EFLAGS                             	0x202
+%define CTX_SIZE                                15*4
 
 %define DIR_TAREA_IDLE                         	0x10000
 %define DIR_LOG_CODIGO_TAREA                   	0x8000000
 %define DIR_LOG_PILA_TAREA                     	DIR_LOG_CODIGO_TAREA + PAGE_SIZE
 
 extern GDT_DESC
-extern gdt_inicializar
+extern gdt_inicializar_tss
 extern IDT_DESC
 extern idt_inicializar
 extern deshabilitar_pic
@@ -122,6 +124,8 @@ extern ts_tareas
     push eax
     mov [ebx+TS_ESP0_OFFSET], esp
     mov esp, ecx
+    add ecx, CTX_SIZE
+    mov [tss_sistema+TSS_ESP0_OFFSET], ecx
     pop eax
     mov cr3, eax
     pop eax

@@ -43,6 +43,6 @@ extern gdt_descriptor GDT_DESC;
 
 extern struct str_tss tss_sistema;
 
-void gdt_inicializar();
+void gdt_inicializar_tss();
 
 #endif  /* !__GDT_H__ */

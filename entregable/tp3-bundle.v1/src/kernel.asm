@@ -44,7 +44,6 @@ start:
     call habilitar_A20
     
     ; Cargar la GDT
-    call gdt_inicializar
     lgdt [GDT_DESC]
 
     ; Setear el bit PE del registro CR0
@@ -93,7 +92,8 @@ BITS 32
     mov cr0, eax 
 
     ; Inicializar tss
-    mov eax, GDT_IDX_IDLE_TASK
+    call gdt_inicializar_tss
+    mov eax, GDT_IDX_TSS_SISTEMA
     ltr ax
 
     ; Inicializar tss de la tarea Idle

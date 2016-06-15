@@ -125,8 +125,8 @@ gdt_descriptor GDT_DESC = {
 
 
 //Lo usamos para completar valores que no podemos completar con la inicializacion estática.
-void gdt_inicializar() {
-    // GDT_IDLE_TASK
+void gdt_inicializar_tss() {
+    // GDT_TSS_SISTEMA
     gdt_entry2d* gdte_sistema = (gdt_entry2d*) &gdt[GDT_IDX_TSS_SISTEMA];
     gdte_sistema->lo = gdte_sistema->lo | (SEG_BASE_0_15(&tss_sistema) << 16);
     gdte_sistema->hi = gdte_sistema->hi | SEG_BASE_16_23(&tss_sistema) | (SEG_BASE_24_31(&tss_sistema) << 24) ;

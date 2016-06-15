@@ -22,7 +22,7 @@ DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
 
 CFLAGS=-m32 -g -ggdb -Wall -Werror -O0 \
-  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding
+  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -shared
 
 
 TASKIDLE=idle.tsk
