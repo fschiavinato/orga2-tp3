@@ -6,6 +6,31 @@
 
 #include "game.h"
 
+// Funciones Auxiliares.
+unsigned int game_obtener_queue_idx_jugador(unsigned int jugador) {
+    unsigned int res = 0;
+    switch(jugador) {
+        case JUGA:
+            res = SCHED_QUEUE_IDX_JUGA;
+            break;
+        case JUGB:
+            res = SCHED_QUEUE_IDX_JUGB;
+    }
+    return res;
+}
+
+unsigned char* game_obtener_dir_phy_codigo_jugador(unsigned int jugador) {
+    unsigned char* res = 0;
+    switch(jugador) {
+        case JUGA:
+            res = (unsigned char*) DIR_PHY_CODIGO_JUGA;
+            break;
+        case JUGB:
+            res = (unsigned char*) DIR_PHY_CODIGO_JUGB;
+    }
+    return res;
+}
+
 void game_mover_cursor(int jugador, direccion dir) {
     int desp_x = 0;
     int desp_y = 0;
@@ -30,12 +55,12 @@ void game_mover_cursor(int jugador, direccion dir) {
 }
 
 void game_lanzar(unsigned int jugador) {
-    switch(jugador) {
-        case ID_CODE_JUGA:
-            break;
-        case ID_CODE_JUGB:
-            break;
-    }
+    unsigned int queue_idx = game_obtener_queue_idx_jugador(jugador);
+    unsigned char* dir_phy_codigo = game_obtener_dir_phy_codigo_jugador(jugador);
+    pos* pos_cursor = screen_obtener_pos_cursor(jugador);
+    if(sched_correr_tarea(queue_idx, dir_phy_codigo, pos_cursor->x, pos_cursor->y)) 
+            screen_mapa_imprimir_tarea_infectadora(jugador, pos_cursor->x, pos_cursor->y);
+
 }
 
 void game_soy(unsigned int yoSoy) {

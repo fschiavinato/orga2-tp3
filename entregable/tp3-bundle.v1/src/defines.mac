@@ -96,6 +96,7 @@ extern sched_ts_tarea_actual
 extern tss_sistema
 extern ts_tareas
 extern game_mover_cursor
+extern game_lanzar
 
 ; Si es una tarea la pila tiene que estar como sigue:
 

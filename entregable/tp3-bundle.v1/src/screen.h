@@ -44,14 +44,26 @@
 
 #define DIST_ABAJO(y)                   (VIDEO_FILS - 1 - y)
 
-#define CURSOR_IDX_JUGA                 0
-#define CURSOR_IDX_JUGB                 1
+#define SCREEN_IDX_JUGA                 0
+#define SCREEN_IDX_JUGB                 1
 
-#define CURSOR_POS_DEF_JUGA            ((pos){19,22})
-#define CURSOR_CA_JUGA                 (ca){'*', C_FG_BLACK}
-#define CURSOR_POS_DEF_JUGB            ((pos){59,22})
-#define CURSOR_CA_JUGB                 (ca){'*', C_FG_BLACK}
+#define CURSOR_POS_DEF_JUGA             ((pos){19,22})
+#define CURSOR_CA_JUGA                  (ca){'*', C_FG_BLACK}
+#define CURSOR_POS_DEF_JUGB             ((pos){59,22})
+#define CURSOR_CA_JUGB                  (ca){'*', C_FG_BLACK}
 
+#define POS_MARCADOR_VIDAS_JUGA         (pos){VIDASA_SCORE_OFFSETX, VIDASA_SCORE_OFFSETY}
+#define POS_MARCADOR_VIDAS_JUGB         (pos){VIDASB_SCORE_OFFSETX, VIDASB_SCORE_OFFSETY}
+
+#define CA_TAREA_INFECTADORA_JUGA       (ca){'*', C_BG_LIGHT_GREY | C_FG_BLUE}
+#define CA_TAREA_INFECTADORA_JUGB       (ca){'*', C_BG_LIGHT_GREY | C_FG_RED}
+
+#define CA_TAREA_INFECTADA_JUGA         (ca){' ', C_BG_BLUE | C_FG_BLACK}
+#define CA_TAREA_INFECTADA_JUGB         (ca){' ', C_BG_RED | C_FG_BLACK}
+#define CA_TAREA_SANA                   (ca){' ', C_BG_GREEN | C_FG_BLACK}
+
+#define CA_PAGINA_MAPEADA_JUGA          (ca){'A', C_BG_LIGHT_GREY | C_FG_BLACK}
+#define CA_PAGINA_MAPEADA_JUGB          (ca){'B', C_BG_LIGHT_GREY | C_FG_BLACK}
 
 #include "colors.h"
 #include "defines.h"
@@ -66,6 +78,20 @@ typedef struct pos_t {
     unsigned int x;
     unsigned int y;
 } pos;
+
+typedef struct cursor_t {
+    pos posicion;
+    ca visible;
+    ca abajo; // guardamos lo que está debajo del cursor.
+} cursor;
+
+typedef struct jugador_visual_t {
+    cursor cursor;
+    ca pagina_mapeada;
+    ca tarea_infectadora;
+    ca tarea_infectada;
+    pos marcador_vidas; 
+} jugador_visual;
 
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
@@ -84,6 +110,14 @@ void screen_ubicar_cursor(int j, unsigned int x, unsigned int y);
 
 pos* screen_obtener_pos_cursor(int j);
 
-unsigned int screen_obtener_idx_cursor(int jug);
+jugador_visual* screen_obtener_visual_jugador(int jug);
+
+void screen_mapa_imprimir_pagina(int jug, unsigned int x, unsigned int y);
+
+void screen_mapa_imprimir_tarea_infectadora(int jug, unsigned int x, unsigned int y);
+
+void screen_mapa_imprimir_tarea_infectada(int jug, unsigned int x, unsigned int y);
+
+void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y);
 
 #endif  /* !__SCREEN_H__ */

@@ -33,7 +33,7 @@ unsigned char* sched_proximo_indice();
 struct str_ts* sched_ts_tarea_actual();
 tarea* sched_info_tarea_actual();
 void sched_correr_siguiente_tarea();
-void sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y);
+unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y);
 void sched_matar_tarea_actual();
 
 extern void crear_contexto_usr(struct str_ts* task, unsigned char* codigo, unsigned char* dirmapa);

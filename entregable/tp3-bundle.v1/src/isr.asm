@@ -177,21 +177,17 @@ _isr33:
     je mover_cursor
 
     mov ebx, ENUM_DIR_IZQ
-    mov ecx, ENUM_JUG_JUGA
     cmp al, KEY_A
     je mover_cursor
 
     mov ebx, ENUM_DIR_ABA
-    mov ecx, ENUM_JUG_JUGA
     cmp al, KEY_S
     je mover_cursor
 
     mov ebx, ENUM_DIR_DER
-    mov ecx, ENUM_JUG_JUGA
     cmp al, KEY_D
     je mover_cursor
 
-    mov ebx, 'L'
     cmp al, KEY_LSHIFT
     je lanzar_tarea
 
@@ -200,22 +196,18 @@ _isr33:
     cmp al, KEY_I
     je mover_cursor
 
-    mov ebx, ENUM_DIR_IZQ
-    mov ecx, ENUM_JUG_JUGB
+    mov ebx, ENUM_DIR_ABA
     cmp al, KEY_K
     je mover_cursor
 
-    mov ebx, ENUM_DIR_ABA
-    mov ecx, ENUM_JUG_JUGB
+    mov ebx, ENUM_DIR_IZQ
     cmp al, KEY_J
     je mover_cursor
 
     mov ebx, ENUM_DIR_DER
-    mov ecx, ENUM_JUG_JUGB
     cmp al, KEY_L
     je mover_cursor
 
-    mov ebx, 'R'
     cmp al, KEY_RSHIFT
     je lanzar_tarea
 
@@ -232,6 +224,8 @@ mover_cursor:
     jmp fin_isr33        
 
 lanzar_tarea:
+    push ecx
+    call game_lanzar
     jmp fin_isr33
 ;;
 ;; Rutinas de atención de las SYSCALLS
