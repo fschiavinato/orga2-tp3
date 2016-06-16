@@ -53,7 +53,7 @@ void sched_correr_siguiente_tarea();
 
 unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y);
 
-unsigned char* sched_matar_tarea_actual();
+unsigned char* sched_matar_tarea_actual(unsigned int* info);
 
 extern void crear_contexto_usr(struct str_ts* task, unsigned char* codigo, unsigned char* dirmapa);
 

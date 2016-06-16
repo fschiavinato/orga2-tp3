@@ -148,7 +148,7 @@ unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_c
 }
 
 
-unsigned char* sched_matar_tarea_actual(unsigned char* info) {
+unsigned char* sched_matar_tarea_actual(unsigned int* info) {
     unsigned char* res;
     tarea* actual = sched_info_tarea_actual();
     if(actual != NULL) {

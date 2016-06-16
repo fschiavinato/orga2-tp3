@@ -79,13 +79,15 @@
 #define DEBUG_ALTO                          (42 - DEBUG_OFFSETY)
 #define DEBUG_OFFSETX                       24
 #define DEBUG_OFFSETY                       6
-#define DEBUG_MARCO_INF_SIZE                0x1
-#define DEBUG_MARCO_IZQ_SIZE                0x1
-#define DEBUG_MARCO_SUP_SIZE                0x1
-#define DEBUG_MARCO_DER_SIZE                0x1
+#define DEBUG_MARCO_INF_SIZE                1
+#define DEBUG_MARCO_IZQ_SIZE                1
+#define DEBUG_MARCO_SUP_SIZE                1
+#define DEBUG_MARCO_DER_SIZE                1
 #define DEBUG_MARCO_COLOR                   (ca) {' ', C_BG_BLACK | C_FG_WHITE}
-#define DEBUG_TITULO_SIZE                   0x1
+#define DEBUG_TITULO_SIZE                   1
 #define DEBUG_TITULO_COLOR                  (ca) {' ', C_BG_RED | C_FG_WHITE}
+#define DEBUG_REGISTER_COLOR                (ca) {' ', C_BG_LIGHT_GREY | C_FG_WHITE}
+#define DEBUG_REGISTER_TITLE_COLOR          (ca) {' ', C_BG_LIGHT_GREY | C_FG_BLACK}
 #define DEBUG_COL1_OFFSETX                  26
 #define DEBUG_COL1_OFFSETY                  DEBUG_OFFSETY+3
 #define DEBUG_COL2_OFFSETX                  40
@@ -168,7 +170,7 @@ void screen_mapa_ubicar_pagina(unsigned int x, unsigned int y);
 
 void screen_mapa_quitar_pagina();
 
-void screen_mostrar_consola_debug(unsigned char* info);
+void screen_mostrar_consola_debug(unsigned int* info);
 
 void screen_ocultar_consola_debug();
 

@@ -42,14 +42,83 @@ extern sched_correr_siguiente_tarea
 global _isr%1
 
 _isr%1:
+    pushad
+    push ds
+    push es
+    push fs
+    push gs
+    push ss
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
+
     mov eax, %1
     imprimir_texto_mp isr%1_msg, isr%1_len, 0x07, 0, 0
+    push esp
     call sched_matar_tarea_actual
     mov ebx, eax
     call sched_ts_tarea_actual
     cambio_contexto eax, ebx
 
 %endmacro
+
+%macro ISR_ERROR_CODE 1
+global _isr%1
+
+_isr%1:
+    add esp, 4
+    pushad
+    push ds
+    push es
+    push fs
+    push gs
+    push ss
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
+
+    mov eax, %1
+    imprimir_texto_mp isr%1_msg, isr%1_len, 0x07, 0, 0
+    push esp
+    call sched_matar_tarea_actual
+    mov ebx, eax
+    call sched_ts_tarea_actual
+    cambio_contexto eax, ebx
+
+%endmacro
+
+; INFO -> | cr4     |
+;         | cr3     |
+;         | cr2     |
+;         | cr0     |
+;         | ss      |
+;         | gs      |
+;         | fs      |
+;         | es      |
+;         | ds      |
+;         | EDI     |
+;         | ESI     |
+;         | EBP0    |
+;         | ESP0    |
+;         | EBX     |
+;         | EDX     |
+;         | ECX     |
+;         | EAX     |
+;         | EIP     |
+;         | CS      |
+;         | EFLAGS  |
+;         | ESP     |
+;         | SS      |
 
 ;;
 ;; Datos
@@ -129,15 +198,15 @@ ISR 4
 ISR 5
 ISR 6
 ISR 7
-ISR 8
+ISR_ERROR_CODE 8
 ISR 9
-ISR 10
-ISR 11
-ISR 12
-ISR 13
-ISR 14
+ISR_ERROR_CODE 10
+ISR_ERROR_CODE 11
+ISR_ERROR_CODE 12
+ISR_ERROR_CODE 13
+ISR_ERROR_CODE 14
 ISR 16
-ISR 17
+ISR_ERROR_CODE 17
 ISR 18
 ISR 19
 ISR 20
