@@ -34,6 +34,7 @@
 #define MAX_NUM_TAREAS                      MAX_NUM_TAREAS_SANAS+MAX_NUM_TAREAS_JUGA+MAX_NUM_TAREAS_JUGB
 #define CANT_JUGADORES                      2
 #define CANT_VIDAS                          20
+#define CANT_ESTADOS_RELOJ                  4
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */

@@ -92,12 +92,12 @@ void game_lanzar(unsigned int jugador) {
             screen_actualizar_puntajes();
         }
     }
-
 }
 
 void game_soy(unsigned int yoSoy) {
     if(es_jugador(yoSoy)) {
         screen_infectar(yoSoy);
+        sched_infectar(yoSoy);
         screen_actualizar_puntajes();
     }
 }

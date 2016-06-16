@@ -18,7 +18,9 @@ jugador_visual visual_jugadores[CANT_JUGADORES] = {
         CA_PAGINA_MAPEADA_JUGA,
         CA_TAREA_INFECTADORA_JUGA,
         CA_TAREA_INFECTADA_JUGA,
-        POS_MARCADOR_VIDAS_JUGA
+        POS_MARCADOR_VIDAS_JUGA,
+        POS_MARCADOR_JUGA,
+        JUGA
 
     },
     [SCREEN_IDX_JUGB] = {
@@ -30,11 +32,15 @@ jugador_visual visual_jugadores[CANT_JUGADORES] = {
         CA_PAGINA_MAPEADA_JUGB,
         CA_TAREA_INFECTADORA_JUGB,
         CA_TAREA_INFECTADA_JUGB,
-        POS_MARCADOR_VIDAS_JUGB
+        POS_MARCADOR_VIDAS_JUGB,
+        POS_MARCADOR_JUGB,
+        JUGB
     }
 };
 
 cursor paginas_mapeadas_visual[MAX_NUM_TAREAS]; // Usamos el mismo indice que en el arreglo de ts.
+
+unsigned char estados_relojes[CANT_ESTADOS_RELOJ+1] = {'\\','|','/','-', 'X'};
 
 //-----------------------------------------------------------------------------
 // Funciones Auxiliares
@@ -193,14 +199,14 @@ void imprimir_pantalla(){
 
     print("vidas", VIDASA_OFFSETX, VIDASA_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
     print("vidas", VIDASB_OFFSETX, VIDASB_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
-    screen_actualizar_vidas(20, JUGA);
-    screen_actualizar_vidas(20, JUGB);
+    screen_actualizar_vidas(JUGA, CANT_VIDAS);
+    screen_actualizar_vidas(JUGB, CANT_VIDAS);
 
     screen_ubicar_cursor(JUGA, CURSOR_POS_DEF_JUGA.x, CURSOR_POS_DEF_JUGA.y);
     screen_ubicar_cursor(JUGB, CURSOR_POS_DEF_JUGB.x, CURSOR_POS_DEF_JUGB.y);
 }
 
-void screen_actualizar_vidas(int jug, int vidas) {
+void screen_actualizar_vidas(int jug, unsigned int vidas) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     pos* offset = &screen_obtener_visual_jugador(jug)->marcador_vidas;
     p[offset->y][offset->x].c = ' ';
@@ -209,8 +215,33 @@ void screen_actualizar_vidas(int jug, int vidas) {
 }
 
 void screen_actualizar_puntajes() {
+    int i = 0;
+    for(; i < CANT_JUGADORES; i++) {
+
+        ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+        unsigned int puntos = sched_infectados(visual_jugadores[i].jug);
+        p[visual_jugadores[i].marcador.y][visual_jugadores[i].marcador.x].c = ' ';
+        p[visual_jugadores[i].marcador.y][visual_jugadores[i].marcador.x+1].c = ' ';
+        print_int_sinattr(puntos, visual_jugadores[i].marcador.x+1, visual_jugadores[i].marcador.y);
+    }
 
 }
+
+void screen_actualizar_reloj(unsigned int queue_idx, unsigned int tarea_idx, unsigned int estado_reloj) {
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    switch(queue_idx) {
+        case SCHED_QUEUE_IDX_JUGA:
+            p[RELOJESA_OFFSETY][RELOJESA_OFFSETX + tarea_idx*(ESPACIO_ENTRE_RELOJES + 1)].c = estados_relojes[estado_reloj];
+            break;
+        case SCHED_QUEUE_IDX_JUGB:
+            p[RELOJESB_OFFSETY][RELOJESB_OFFSETX + tarea_idx*(ESPACIO_ENTRE_RELOJES + 1)].c = estados_relojes[estado_reloj];
+            break;
+        case SCHED_QUEUE_IDX_SANAS:
+            p[RELOJESS_OFFSETY][RELOJESS_OFFSETX + tarea_idx*(ESPACIO_ENTRE_RELOJES + 1)].c = estados_relojes[estado_reloj];
+            break;
+    }
+}
+
 
 void screen_quitar_cursor(int jug) {
     jugador_visual* v_jug  = screen_obtener_visual_jugador(jug);
@@ -244,7 +275,6 @@ void screen_ubicar_cursor(int jug, unsigned int x, unsigned int y) {
 }
 
 pos* screen_obtener_pos_cursor(int jug) {
-
     return &screen_obtener_visual_jugador(jug)->cursor.posicion;
 }
 

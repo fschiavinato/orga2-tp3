@@ -13,18 +13,21 @@ queue run_queues[NUM_QUEUES] = {
         MAX_NUM_TAREAS_SANAS,
         0,
         TS_START_IDX_SANAS,
+        NULL,
         (tarea[MAX_NUM_TAREAS_SANAS]){}
     },
     [SCHED_QUEUE_IDX_JUGA] = {
         MAX_NUM_TAREAS_JUGA,
         0,
         TS_START_IDX_JUGA,
+        JUGA,
         (tarea[MAX_NUM_TAREAS_JUGA]){}
     },
     [SCHED_QUEUE_IDX_JUGB] = {
         MAX_NUM_TAREAS_JUGB,
         0,
         TS_START_IDX_JUGB,
+        JUGB,
         (tarea[MAX_NUM_TAREAS_JUGB]){} //no deberia ser tareas[TS_START_IDX_JUGB]
     }
 };
@@ -50,9 +53,16 @@ void sched_inicializar() {
 
 unsigned char* sched_proxima_tarea() {
     unsigned char* res = ts_tareas[TS_IDX_IDLE].esp0;
-    current_queue = (current_queue+1) % NUM_QUEUES;
     unsigned int cT = 0, cQ = 0;
-    unsigned int iT = run_queues[current_queue].tarea_actual+1, iQ = current_queue;
+    unsigned int iQ = (current_queue+1) % NUM_QUEUES;
+    unsigned int iT = (run_queues[iQ].tarea_actual+1) % run_queues[iQ].cant;
+
+    tarea* actual = sched_info_tarea_actual();
+    if(actual != NULL) {
+        actual->estado_reloj++;
+        actual->estado_reloj %= CANT_ESTADOS_RELOJ;
+        screen_actualizar_reloj(current_queue, run_queues[current_queue].tarea_actual, actual->estado_reloj);
+    }
 
     if(!parado) {
         while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE) {
@@ -121,6 +131,7 @@ unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_c
         q->tareas[iT].pos_x = x;
         q->tareas[iT].pos_y = y;
         crear_contexto_usr(&ts_tareas[q->ts_start_idx + iT], dir_phy_codigo, mmu_dir_mapa(x, y));
+        q->tareas[iT].estado_reloj = 0;
         q->tareas[iT].viva = TRUE;
     }
     return iT < q->cant && !lugar_ocupado;
@@ -142,7 +153,7 @@ void sched_infectar(int jug) {
 
 unsigned int sched_infectados(int jug) {
     int i, j;
-    unsigned int cant;
+    unsigned int cant = 0;
     for(i = 0; i < NUM_QUEUES; i++) 
         for(j = 0; j < run_queues[i].cant; i++) 
             if(run_queues[i].tareas[j].viva == TRUE && run_queues[i].tareas[j].virus == jug)

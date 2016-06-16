@@ -21,12 +21,14 @@ typedef struct tarea_t {
     unsigned int virus;
     unsigned int pos_x;
     unsigned int pos_y;
+    unsigned int estado_reloj;
 } tarea;
 
 typedef struct queue_t {
     unsigned int cant;
     unsigned int tarea_actual;
     unsigned int ts_start_idx;
+    unsigned int jug;
     tarea* tareas;
 } queue;
 
