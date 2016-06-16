@@ -65,7 +65,7 @@
 %define PAGE_SIZE                              	0x1000
 
 ;============
-;   TAREAS 
+;   TAREAS
 ;============
 %define TS_SIZE                                	4
 %define TS_ESP0_OFFSET                         	0
@@ -89,10 +89,10 @@ extern idt_inicializar
 extern deshabilitar_pic
 extern resetear_pic
 extern habilitar_pic
-extern mmu_inicializar_dir_kernel 
-extern mmu_inicializar_dir_tarea 
-extern mmu_inicializar 
-extern mmu_nueva_pila_kernel 
+extern mmu_inicializar_dir_kernel
+extern mmu_inicializar_dir_tarea
+extern mmu_inicializar
+extern mmu_nueva_pila_kernel
 extern print_int
 extern imprimir_pantalla
 extern sched_inicializar
@@ -100,6 +100,7 @@ extern sched_proxima_tarea
 extern sched_ts_tarea_actual
 extern sched_idle
 extern sched_matar_tarea_actual
+extern sched_toggle_debug
 extern tss_sistema
 extern ts_tareas
 extern game_mover_cursor
@@ -136,7 +137,7 @@ extern game_mapear
 %macro cambio_contexto 2
     push %1
     push %2
-    pop ecx 
+    pop ecx
     pop ebx
     mov eax, ds
     push eax
@@ -155,4 +156,4 @@ extern game_mapear
     mov gs, eax
     popad
     iret
-%endmacro    
+%endmacro

@@ -42,6 +42,8 @@ cursor cursores_paginas[MAX_NUM_TAREAS]; // Usamos el mismo indice que en el arr
 
 unsigned char estados_relojes[CANT_ESTADOS_RELOJ+1] = {'\\','|','/','-', 'X'};
 
+ca backup_pantalla[DEBUG_ALTO][DEBUG_ALTO];
+
 //-----------------------------------------------------------------------------
 // Funciones Auxiliares
 //-----------------------------------------------------------------------------
@@ -368,13 +370,24 @@ void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
     screen_ubicar_debajo_cursores(&CA_TAREA_SANA, x, y);
 }
 
-void guardar_pantalla( store_screen store ){
-    int i, j;
+ void screen_mostrar_consola_debug(unsigned char* info) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-    for(i = 0; i < VIDEO_FILS; i++) {
-        for(j = 0; j < VIDEO_COLS ; j++) {
-            store.sto_screen[i][j].c = p[i][j].c;
-            store.sto_screen[i][j].a =p[i][j].a;
-        }
+    for(int i = 0; i < DEBUG_ALTO; i++) {
+      for(int j = 0; j < DEBUG_ANCHO; j++) {
+        backup_pantalla[i][j].c = p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c;
+        backup_pantalla[i][j].a = p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].a;
+        p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c = CA_MAPA.c;
+        p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].a = CA_MAPA.a;
+      }
     }
- }//los registros?
+ }
+
+ void screen_ocultar_consola_debug() {
+   ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+   for(int i = 0; i < DEBUG_ALTO; i++) {
+     for(int j = 0; j < DEBUG_ANCHO; j++) {
+       p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c = backup_pantalla[i][j].c;
+       p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].a = backup_pantalla[i][j].a;
+     }
+   }
+ }

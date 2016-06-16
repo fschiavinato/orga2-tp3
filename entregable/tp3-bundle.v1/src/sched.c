@@ -36,6 +36,7 @@ unsigned int current_task_ticks = 0;
 unsigned int current_queue = 0;
 unsigned char en_idle = 0;
 unsigned char parado = 0;
+unsigned char debug = 0;
 
 void sched_inicializar() {
     int i = 0;
@@ -64,7 +65,7 @@ unsigned char* sched_proxima_tarea() {
         screen_actualizar_reloj(current_queue, run_queues[current_queue].tarea_actual, actual->estado_reloj);
     }
 
-    if(!parado) {
+    if(parado == FALSE || debug == FALSE) {
         do {
             iQ = (current_queue + cQ + 1) % NUM_QUEUES;
             iT = (run_queues[iQ].tarea_actual + cT + 1) % run_queues[iQ].cant;
@@ -82,6 +83,12 @@ unsigned char* sched_proxima_tarea() {
         else {
             en_idle = 1;
         }
+
+        if(parado == TRUE) {
+          parado = FALSE;
+          screen_ocultar_consola_debug();
+        }
+
     }
     else {
         res = sched_ts_tarea_actual()->esp0;
@@ -109,12 +116,8 @@ unsigned char* sched_idle() {
     return ts_tareas[TS_IDX_IDLE].esp0;
 }
 
-void sched_parar() {
-    parado = TRUE;
-}
-
-void sched_reanudar() {
-    parado = FALSE;
+void sched_toggle_debug() {
+    debug = !debug;
 }
 
 unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y) {
@@ -145,7 +148,7 @@ unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_c
 }
 
 
-unsigned char* sched_matar_tarea_actual() {
+unsigned char* sched_matar_tarea_actual(unsigned char* info) {
     unsigned char* res;
     tarea* actual = sched_info_tarea_actual();
     if(actual != NULL) {
@@ -155,6 +158,10 @@ unsigned char* sched_matar_tarea_actual() {
     screen_matar(actual->pos_x, actual->pos_y);
     screen_actualizar_puntajes();
     screen_actualizar_reloj(current_queue, run_queues[current_queue].tarea_actual, CANT_ESTADOS_RELOJ);
+    if(debug) {
+      parado = TRUE;
+      screen_mostrar_consola_debug(info);
+    }
     return res;
 }
 

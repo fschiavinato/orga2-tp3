@@ -47,6 +47,8 @@ unsigned int sched_infectados(int jug);
 
 unsigned char* sched_idle();
 
+void sched_toggle_debug();
+
 void sched_correr_siguiente_tarea();
 
 unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y);

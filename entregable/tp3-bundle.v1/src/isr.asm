@@ -211,7 +211,7 @@ _isr33:
     je mover_cursor
 
     cmp al, KEY_Y
-    je start_end_modo_debug
+    je debug
 
     cmp al, KEY_RSHIFT
     je lanzar_tarea
@@ -234,9 +234,9 @@ lanzar_tarea:
     add esp, 4
     jmp fin_isr33
 
-
-start_end_modo_debug:
-jmp fin_isr33
+debug:
+  call sched_toggle_debug
+  jmp fin_isr33
 
 
 ;;
