@@ -67,7 +67,7 @@
 \fancyhf{}
 
 \fancyhead[LO]{Sección \rightmark} % \thesection\ 
-\fancyfoot[LO]{\small{Nombre Apellido, Nombre Apellido, Nombre Apellido}}
+\fancyfoot[LO]{\small{Franco  Cesar Schiavinato, Alicia Amalia Alvarez Mon, Martín David Guttman}}
 \fancyfoot[RO]{\thepage}
 \renewcommand{\headrulewidth}{0.5pt}
 \renewcommand{\footrulewidth}{0.5pt}
@@ -91,11 +91,13 @@
 
 \thispagestyle{empty}
 \materia{Organización del Computador II}
-\submateria{Segundo Cuatrimestre de 2014}
+\submateria{Segundo Cuatrimestre de 2016}
 \titulo{Trabajo Práctico III}
 \subtitulo{subtitulo del trabajo}
-\integrante{Nombre}{XXX/XX}{mail}
-\integrante{Nombre}{XXX/XX}{mail}
+\integrante{Alicia Amalia Alvarez Mon}{224/15}{alicia_suerte@hotmail.com}
+\integrante{Franco  Cesar Schiavinato}{586/14}{francocschiavinato@gmail.com}
+\integrante{Martín David Guttman}{686/14}{ mdg_92@yahoo.com.ar}
+
 
 %\maketitle
 \newpage
@@ -117,32 +119,20 @@ En el presente trabajo se describe la problemática de ...
 
 \section{Objetivos generales}
 
-El objetivo de este Trabajo Práctico es ...
+El objetivo de este Trabajo Práctico es el de conocer y desrrollar un mejor entendimiento de la organizacion interna del computador y su evolucion, asi como el manejo de las estructura que esta organizacion nos provee, mediante el modelamiento practico de un juego desde el modo real de la maquina.  
 
 
-\section{Contexto}
 
 \begin{figure}
   \begin{center}
-	\includegraphics[scale=0.66]{imagenes/logouba.jpg}
+	\includegraphics[scale=0.80]{imagenes/logouba.jpg}
 	\caption{Descripcion de la figura}
 	\label{nombreparareferenciar}
   \end{center}
 \end{figure}
 
 
-\paragraph{\textbf{Titulo del parrafo} } Bla bla bla bla.
-Esto se muestra en la figura~\ref{nombreparareferenciar}.
 
-
-
-
-
-
-\section{Enunciado y solucion} 
-%\input{enunciado}
-
-\newpage
 \section{Resolución de los Elercicios}
 \subsection{Ejercicio 1}
 
@@ -613,31 +603,29 @@ Para fijarse la proxima tarea a ejecutar, el sheduler usa la funcion sched_proxi
 unsigned char* sched_proxima_tarea() {
     unsigned char* res = ts_tareas[TS_IDX_IDLE].esp0;
     unsigned int cT = 0, cQ = 0;
-    unsigned int iQ = (current_queue+1) % NUM_QUEUES;
-    unsigned int iT = (run_queues[iQ].tarea_actual+1) % run_queues[iQ].cant;
+    unsigned int iQ;
+    unsigned int iT;
 
     tarea* actual = sched_info_tarea_actual();
-    if(run_queues[current_queue].tareas[run_queues[current_queue].ta
-    rea_actual].viva == TRUE) {
+    if(actual->viva == TRUE) {
         actual->estado_reloj++;
         actual->estado_reloj %= CANT_ESTADOS_RELOJ;
-        screen_actualizar_reloj(current_queue, run_queues[current_queue].ta
-        rea_actual, actual->estado_reloj);
+        screen_actualizar_reloj(current_queue, run_queues[current_queue].tarea_actual, actual->estado_reloj);
     }
 
     if(!parado) {
-        while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE) {
-            cQ += (++cT) / run_queues[iQ].cant;
-            cT %= run_queues[iQ].cant;
-            iQ = (current_queue+cQ) % NUM_QUEUES;
-            iT = (run_queues[iQ].tarea_actual+1+cT) % run_queues[iQ].cant;
+        do {
+            iQ = (current_queue + cQ + 1) % NUM_QUEUES;
+            iT = (run_queues[iQ].tarea_actual + cT + 1) % run_queues[iQ].cant;
+            cQ += (++cT) / (run_queues[iQ].cant + 1);
+            cT %= run_queues[iQ].cant + 1;
 
-        }
+        } while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE);
+
         if(cQ <= NUM_QUEUES) {
             current_queue = iQ;
             run_queues[current_queue].tarea_actual = iT;
-            res = ts_tareas[run_queues[current_queue].tareas[run_queues[current_queue].ta
-            rea_actual].ts_idx].esp0;
+            res = ts_tareas[run_queues[iQ].tareas[iT].ts_idx].esp0;
             en_idle = 0;
         }
         else {
@@ -652,16 +640,13 @@ unsigned char* sched_proxima_tarea() {
 \end{verbatim}
 \end{codesnippet}
 
-Que devuelve la dir de la prox tarea. Primero pone en res la dir de la tarea anterior que se habia corrido, y tambien pone en IQ la siguiente cola (de sanas a jugA, de jugA a jugB ) y en iT, la tarea siguiente a la ultima que se habia corrido de esa cola.(que es la que se tiene que correr)
+Que devuelve la dir de la prox tarea. Primero pone en res la dir de la tarea anterior que se habia corrido, y define iT e iQ.
 
 Luego conseguimos la info de la tarea actual, (sched_info_tarea_actual(), nos devuelve la cola y la posicion de esta en la cual esta esta tarea, asi como si es idle (en este caso no estaria en las colas) o no). Al tener esta informacion, podemos ver si la tarea sigue viva.
 
-De estar viva, actualizamos su reloj, y luego, mientras el scheduler no este parado,(se acabo el tiempo) pone a iQ  e IT apuntando a los de la tarea actual, y res apuntando a al esp0 de la tarea actual (pila de kernel) y se lo devuelve. En caso de haberse acabado el tiempo, se usa el iQ y el iT para rellenar la curent quenue la tarea_actual de la quenue y el resultado a su pila de codigo kernel.
+De estar viva, actualizamos su reloj, y luego, mientras el scheduler no este parado,pone a iQ  e IT apuntando a los de la tarea siguiente, y res apuntando a al esp0 de la tarea actual (pila de kernel) y se lo devuelve. En caso de haberse acabado el tiempo, se usa el iQ y el iT para rellenar la current quenue la tarea_actual de la quenue y el resultado a su pila de codigo kernel.
 
 Ademas, si se supero el NUM_QUEUES o la tarea muere, entonces se le pone en_idle=1 para que sheduler corra la tarea idle.
-
-
- se procede a buscar la siguientem moviendo los contadores lo necesario.(Si esta parado, se apunta a la siguiente, sino hace algunas consideraciones de tamano).
  
 Ademas, en el sheduler mata tareas con la funcion shed_matar_tarea_actual, que pone su estado de vivo en falso ()en caso de no ser null), pone a correr la tarea idle hasta que se acabe el quorum y actualiza puntajes y relojes. 
 El sheduler tambien se encarga de cambiar los estado de las tareas si estas infectan o so infectadas, y contar la cantidad de infectados de un virus que hay en todo momento.
@@ -672,13 +657,104 @@ El sheduler tambien se encarga de cambiar los estado de las tareas si estas infe
 
 En esta seccion vamos a explicar la logica del juego en si y como utilizamos y/o modificamos los archivos para poder modificar esto.
 
+En game.c estan las funciones que tienen que ver con la logica del juego. La mayoria son llamadas por la rutina de atencion de una interrupcion de teclado. Aqui definimos:
+
+game_lanzar, que lanza una tarea. En su codigo game_lanzar, dado jug, averigua cual es su quenue(tareas a o b), la dir fisica del codigo de la tarea de jug, y la posicion en donde va a ser lanzada la tarea(cursor).
+Si el jugador tiene vidas para lanzar tarea, entonces se corre la tarea y se imprime en el mapa la tarea infectadora y se actualizan las vidas de jugador y los puntajes. (llamamos a funciones en screen.c).
+
+
+ 
+game_soy, que, dado el yosoy de una tarea, si la tarea es de jugador a o b, muestra el color que le corresponde por pantalla y actualiza los puntajes y su estado en shed(llama a shed_infectar(yoSoy)).
+
+game_mapear, que obtiene la informacion del  virus de la tarea de un jugador, y la posicion del cursor, y a partir de ellos mapeo la pagina a la direccion de pagina correspondiente, (en el medio retiro el cursor para poder mapea la tarear correctamente)
+ 
+
+game_obtener_queue_idx_jugador,(swich que me dice cual cola de tareas debo usar, es la llamada por game_lanzar).
+
+
+game_obtener_dir_phy_codigo_jugador(swich que da la direccion fisica del codigo  del jugador )
+
+game_vidas (swich que me da las vidas)
+
+es_jugador (dado jugador,me dice si es a o  b)
+
+game_donde, donde esta la tarea actual en la pantalla.
+
+game_mover_cursor(dado jug y dir, hace desplazamientos de cursor segun int, y cambia posicion en la pantalla. La usamos en la interrupcion de teclado)
+
+Como podemos ver, en muchos lugares utilizamos funciones de screen.c. En la ultima fncion descripta,  incluso usamos una estructrua que definios en screen.h.
+La estructura es jugador_visual_jugadores, y guarda el cursor, la cantidad de pag mapeadas, la tarea Infectadora(lugar mapa), la de la ser infectada(lugar mapa), el marcador de vidas y el marcador (reloj)de los jugadores y el tipo de jugador, para ambos jugadores.
+Ademas tenemos definido el tipo cur, que es un cursor y tiene como atributos pos, visible y abajo(para guardar lo de abajo de un cursor)
+
+Tambien tenemos funciones que imprimen el mapa, tanto sin atributos, sin caracteres, o con ambas.
+
+Tenemos la funcion screen_actualizar_vidas, que para los dos jugadores, ve como es su color de inf, y usa la funcion shed_infectados de antes para obtener los puntos que le corresponden al jugador y los imprime.
+
+La funcion screen_actualizar_reloj, que cambia el estado del reloj por pantalla de la tarea que lo pidio.
+
+La funcion screen_quitar_cursor, que se fija si la posicion de los cursores de los jugadores  o el de alguna tarea estan en la misma posicion que la posicion pasado, y si es asi se imprime lo que hay en esa posicion. De manera contraria, se imprime lo que tenia antes la posicion donde esta el cursor.
+
+La fucion screen_ubicar_cursor, que se comporta de la siguiente manera:
+
+\begin{codesnippet}
+\begin{verbatim}		
+
+void screen_ubicar_cursor(cursor* cur, unsigned int x, unsigned int y) {
+    int i = 0;
+    cursor* cursor_misma_pos = NULL;
+    for(; i < CANT_JUGADORES; i++) 
+        if(visual_jugadores[i].cursor.posicion.x == x && visu
+        al_jugadores[i].cursor.posicion.y == y && &visu
+        al_jugadores[i].cursor != cur) 
+            cursor_misma_pos = &visual_jugadores[i].cursor;
+
+    for(; i < MAX_NUM_TAREAS; i++) 
+        if(cursores_paginas[i].posicion.x == x && cursores_pa
+        ginas[i].posicion.y == y && &visual_jugadores[i].cursor != cur) 
+            cursor_misma_pos = &cursores_paginas[i];
+
+    if(cursor_misma_pos == NULL) {
+        cur->abajo.c = screen_mapa_obtener(x, y)->c;
+        cur->abajo.a = screen_mapa_obtener(x, y)->a;
+        cur->visible.a = screen_mapa_obtener(x, y)->a;
+    }
+    else {
+        cur->abajo.c = cursor_misma_pos->abajo.c;
+        cur->abajo.a = cursor_misma_pos->abajo.a;
+        cur->visible.a = cursor_misma_pos->visible.a;
+    }
+    cur->posicion.x = x % ANCHO_MAPA;
+    cur->posicion.y = y % ALTO_MAPA;
+    screen_mapa_imprimir(&cur->visible, cur->posicion.x, cur->posicion.y);
+}
+\end{verbatim}
+\end{codesnippet}
+
+
+Recibe un la direccion de un cursor, y una posicion, y di el cursor de uno de los jugadores esta en el mismo lugar, o si esta en el cursor de alguna de las tareas, entonces le da los mismos atributos al cursor que la del cursor con el cual coincide. Si no coincide con ninguno, entonces guardamos en abajo los atributos de la posicion de abajo de donde voy a poner el cursor., y en visible tambien(pues no ha ninguna tarea o jugador).Por ultimo, le pongo a los atributos de cursor la pos pasada por parametro y lo imprimo.
+
+Tambien hay otras funciones, que guardan la pantalla en una matriz en aparte,
+screen_visual_jugador, que para un jugador dado, te da sus atributos (de la estructura auxiliar visual jugadores),  y screen_mapa_imprimir_tarea_afectora(llama a imprimir con la tarea infectoria de el jug pasado, y ubica los anterior debajo(en cursor)), screen_infectar, que hace lo mismo  pero sin los attr de la tarea, y screen_mapa_tarea_sana, que imprime sin caracter la tarea sana en la pos pasada(y ubica cursores debajo)
+
+Con esto el manejo del juego esta estaticamente cerrado, para que funcione, sin embargo, se necesita de que las interrupciones llamen a estas funciones. Debido a eso, actualizamos las rutinas de interrumpcion de teclado y la de sistema0x66
+
+Modificaciones de la interrupcion de teclado:
 
 Cuando se produzca alguna interrupcion que agrege tareas,(las de los shifts), 
-la rutina de interrupcion de teclado de isr llama a game_lanzar, que identifica el jugador y la direccion fisica de donde vino la interrupcion, y el lugar donde estaba el cursor, (llama a funciones auxiliares que  guardan/muestran esa informacion) y si 
+la rutina de interrupcion de teclado de isr llama a game_lanzar. Si se presiona la de las direcciones, se llama a game_mover_cursor(se pasan en ebx, ecx los parametros para llamarla) se mueve 8 para no romper el stack, se llama a fin_intr_pic1 y se vuelve.
+
+Modificaciones de la interrupcion de reloj:
+
+Se llama a proximo_reloj, luego a fin_intr_pic1  para poder recibir otra interrupcion de ser requerido, luego a shed_ts)tarea_actual y luego de tenerla, con su resultado a sched_proxima_tarea, se compara si son iguales, en cuyo caso se termina la interrupcion, o en caso de no serlo, se llama a cambio_contexto para cambiar el contexto y pasar a la proxima tarea),  y se sale.
+
+Modificaciones de la interrupcion de sistema:
+
+Se salvan los registros y se  compara con el valor que significa que la tarea solicita el servicio DONDE, y hace lo mismo conlos servicios SOY y MAPEAR, si alguno de ellos conicide, entonces se llama, respectivamente a game_soy, game_mapear o game_donde y luego popea los registros y sale. 
+
+Con esto queda bien funcional el juego.
 
 
 
-\section{Conclusiones y trabajo futuro}
 
 
 \end{document}
