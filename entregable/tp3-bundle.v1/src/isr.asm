@@ -45,6 +45,9 @@ _isr%1:
     mov eax, %1
     imprimir_texto_mp isr%1_msg, isr%1_len, 0x07, 0, 0
     call sched_matar_tarea_actual
+    mov ebx, eax
+    call sched_ts_tarea_actual
+    cambio_contexto eax, ebx
     iret
     
 
@@ -251,6 +254,10 @@ _isr102:
     je int_mapear
 
 fin_isr102:
+    call sched_idle
+    mov ebx, eax
+    call sched_ts_tarea_actual
+    cambio_contexto eax, ebx
     popad
     iret
 

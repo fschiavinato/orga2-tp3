@@ -22,6 +22,7 @@ typedef struct tarea_t {
     unsigned int pos_x;
     unsigned int pos_y;
     unsigned int estado_reloj;
+    unsigned char mapeo;
 } tarea;
 
 typedef struct queue_t {
@@ -38,6 +39,8 @@ struct str_ts* sched_ts_tarea_actual();
 
 tarea* sched_info_tarea_actual();
 
+queue* sched_info_queue_actual();
+
 void sched_infectar(int jug);
 
 unsigned int sched_infectados(int jug);
@@ -48,7 +51,7 @@ void sched_correr_siguiente_tarea();
 
 unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,unsigned int x, unsigned int y);
 
-void sched_matar_tarea_actual();
+unsigned char* sched_matar_tarea_actual();
 
 extern void crear_contexto_usr(struct str_ts* task, unsigned char* codigo, unsigned char* dirmapa);
 

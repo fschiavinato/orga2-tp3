@@ -135,7 +135,9 @@ void screen_mapa_imprimir_pagina(int jug, unsigned int x, unsigned int y);
 
 void screen_mapa_imprimir_tarea_infectadora(int jug, unsigned int x, unsigned int y);
 
-void screen_infectar(int jug);
+void screen_infectar_sana(int jug, unsigned int x, unsigned int y);
+
+void screen_infectar_infectadora(int jug, unsigned int x, unsigned int y);
 
 void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y);
 

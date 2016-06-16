@@ -130,7 +130,7 @@ extern game_mapear
 ;         | SS     |
 
 
-; 1: esp0 de la tarea actual
+; 1: ts de la tarea actual
 ; 2: esp0 de la tarea nueva
 ; Suponemos que se llama desde una interrupcion y que se hizo un pushad
 %macro cambio_contexto 2

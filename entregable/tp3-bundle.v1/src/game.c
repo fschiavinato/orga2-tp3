@@ -95,8 +95,16 @@ void game_lanzar(unsigned int jugador) {
 }
 
 void game_soy(unsigned int yoSoy) {
+    tarea* actual = sched_info_tarea_actual();
     if(es_jugador(yoSoy)) {
-        screen_infectar(yoSoy);
+        if(es_jugador(sched_info_queue_actual()->jug)) {
+            screen_infectar_infectadora(yoSoy, actual->pos_x, actual->pos_y);
+        }
+        else {
+            screen_infectar_sana(yoSoy, actual->pos_x, actual->pos_y);
+
+        }
+
         sched_infectar(yoSoy);
         screen_actualizar_puntajes();
     }
@@ -113,8 +121,12 @@ void game_mapear(int x, int y) {
 
     cur_pag->visible.c = v_jug->cursor_pagina_visible.c;
 
-    screen_quitar_cursor(screen_cursor_pagina_tarea_actual());
+    if(sched_info_tarea_actual()->mapeo == TRUE)
+        screen_quitar_cursor(cur_pag);
+    else
+        sched_info_tarea_actual()->mapeo = TRUE;
+
     mmu_mapear_pagina(DIR_LOG_PAGINA_TAREA, rcr3(), (unsigned int) mmu_dir_mapa(x,y), PG_USER | PG_WRITE);
-    screen_ubicar_cursor(screen_cursor_pagina_tarea_actual(), x, y);
+    screen_ubicar_cursor(cur_pag, x, y);
 }
 
