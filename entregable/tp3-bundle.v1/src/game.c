@@ -84,7 +84,7 @@ void game_lanzar(unsigned int jugador) {
     unsigned char* dir_phy_codigo = game_obtener_dir_phy_codigo_jugador(jugador);
     pos* pos_cursor = screen_obtener_pos_cursor(jugador);
     if(*game_vidas(jugador) > 0) {
-        if(sched_correr_tarea(queue_idx, dir_phy_codigo, pos_cursor->x, pos_cursor->y)) 
+        if(sched_correr_tarea(queue_idx, dir_phy_codigo, pos_cursor->x, pos_cursor->y))
         {
             screen_mapa_imprimir_tarea_infectadora(jugador, pos_cursor->x, pos_cursor->y);
             (*game_vidas(jugador))--;
@@ -121,12 +121,13 @@ void game_mapear(int x, int y) {
 
     cur_pag->visible.c = v_jug->cursor_pagina_visible.c;
 
-    if(sched_info_tarea_actual()->mapeo == TRUE)
+    if(sched_info_tarea_actual()->mapeo == TRUE) {
         screen_quitar_cursor(cur_pag);
-    else
+    }
+    else {
         sched_info_tarea_actual()->mapeo = TRUE;
-
-    mmu_mapear_pagina(DIR_LOG_PAGINA_TAREA, rcr3(), (unsigned int) mmu_dir_mapa(x,y), PG_USER | PG_WRITE);
+    }
+    mmu_unmapear_pagina(DIR_LOG_PAGINA_TAREA, rcr3());
+    mmu_mapear_pagina(DIR_LOG_PAGINA_TAREA, rcr3(), (unsigned int) mmu_dir_mapa(x, y), PG_USER | PG_WRITE);
     screen_ubicar_cursor(cur_pag, x, y);
 }
-

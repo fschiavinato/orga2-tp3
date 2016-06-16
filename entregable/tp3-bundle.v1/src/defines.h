@@ -46,7 +46,7 @@
 #define GDT_IDX_USER_CODE_DESC              5
 #define GDT_IDX_USER_DATA_DESC              6
 #define GDT_IDX_VIDEO_DESC                  7
-#define GDT_IDX_TSS_SISTEMA                 8	         
+#define GDT_IDX_TSS_SISTEMA                 8
 
 #define GDT_DESC_SIZE                       0x08
 
@@ -82,20 +82,20 @@
 #define SEG_GET_BASE(b24_31,b16_23,b0_15)   (((unsigned int) b24_31) << 24) | (((unsigned int) b16_23) << 16) | ((unsigned int) b0_15)
 #define SEG_LIMIT_0_15(dir)                 ((unsigned int) dir)
 #define SEG_LIMIT_16_19(dir)                (((unsigned int) dir) >> 16)
-#define SEG_TYPE_SYSTEM                     0x00 
-#define SEG_TYPE_CODEDATA                   0x01    
-#define SEG_PRES                            0x01 
+#define SEG_TYPE_SYSTEM                     0x00
+#define SEG_TYPE_CODEDATA                   0x01
+#define SEG_PRES                            0x01
 #define SEG_AVL                             0x01
 #define SEG_MOD_16b                         0x00
 #define SEG_MOD_32b                         0x01
 #define SEG_IA32E                           0x01
-#define SEG_GRAN_1B                         0x00 
+#define SEG_GRAN_1B                         0x00
 #define SEG_GRAN_4K                         0x01
-#define SEG_PRIV0                           0x00 
-#define SEG_PRIV1                           0x01 
-#define SEG_PRIV2                           0x02 
+#define SEG_PRIV0                           0x00
+#define SEG_PRIV1                           0x01
+#define SEG_PRIV2                           0x02
 #define SEG_PRIV3                           0x03
- 
+
 // CODE/DATA/
 
 #define SEG_DATA_RD                         0x00 // Read-Only
@@ -118,10 +118,10 @@
 //SYSTEM
 
 #define SEG_TASK_BUSY                       0x0B
-#define SEG_TASK_NONBUSY                    0x09 
+#define SEG_TASK_NONBUSY                    0x09
 
 
-#define SEG_TYPE_SYSTEM                     0x00 
+#define SEG_TYPE_SYSTEM                     0x00
 
 /* Parametros de las entradas del directorio de paginas  */
 /* -------------------------------------------------------------------------- */
@@ -129,16 +129,17 @@
 #define ENTRIES_TABLE		            1024
 #define PAGE_PRESRW                         0x03
 
-#define INICIO_PAGINAS_LIBRES	            0x100000 	
+#define INICIO_PAGINAS_LIBRES	            0x100000
 #define DIR_LOG_CODIGO_TAREA	            0x08000000
 #define DIR_LOG_PAGINA_TAREA	            DIR_LOG_CODIGO_TAREA + PAGE_SIZE
-#define DIR_LOG_AFUERA_MEMORIA              DIR_LOG_CODIGO_TAREA + 2*PAGE_SIZE
+#define DIR_LOG_AFUERA_MEMORIA            DIR_LOG_CODIGO_TAREA + 2*PAGE_SIZE
 
+#define CR3_BASE_ADDR(cr3)                (cr3 &  0xFFFFF000)
 
-#define PDE_INDEX(virtual)                  (virtual >> 22)
-#define PTE_INDEX(virtual)                  (virtual << 10) >> 22
-#define PDE_PRESENT(entry)	            (entry & 0x1)
-#define PTE_PRESENT(entry)	            (entry & 0x1)
+#define PDE_INDEX(virtual)                (virtual >> 22)
+#define PTE_INDEX(virtual)                (virtual << 10) >> 22
+#define PDE_PRESENT(entry)	              (entry & 0x1)
+#define PTE_PRESENT(entry)	              (entry & 0x1)
 #define PDE_DIRECCION(entry)	            (entry & 0xFFFFF000)
 #define PG_READ 			    0x0
 #define PG_WRITE      		            0x2
@@ -149,7 +150,7 @@
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 #define VIDEO_SCREEN                        0x000B8000 /* direccion fisica del buffer de video */
-#define ADDR_PAGE_DIR			    0x00027000 
+#define ADDR_PAGE_DIR			    0x00027000
 #define ADDR_PAGE_TABLE			    0x00028000
 #define NUM_TABLES_IDENTITY_MAPPING         0x01
 
@@ -178,7 +179,7 @@
 
 #define ANCHO_MAPA                          80
 #define ALTO_MAPA                           44
-#define ID_CODE_JUGA                        0x841                    
+#define ID_CODE_JUGA                        0x841
 #define ID_CODE_JUGB                        0x325
 
 #endif  /* !__DEFINES_H__ */

@@ -17,8 +17,8 @@ extern fin_intr_pic1
 
 ;; Sched
 extern sched_proximo_indice
-extern sched_cambia_tarea 
-extern sched_correr_siguiente_tarea 
+extern sched_cambia_tarea
+extern sched_correr_siguiente_tarea
 
 ;; Keyboard
 %define KEYBOARD_PORT 0x60
@@ -48,8 +48,6 @@ _isr%1:
     mov ebx, eax
     call sched_ts_tarea_actual
     cambio_contexto eax, ebx
-    iret
-    
 
 %endmacro
 
@@ -228,7 +226,7 @@ mover_cursor:
     push ecx
     call game_mover_cursor
     add esp, 8
-    jmp fin_isr33        
+    jmp fin_isr33
 
 lanzar_tarea:
     push ecx

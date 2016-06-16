@@ -25,9 +25,9 @@ unsigned int mmu_nueva_pila_kernel() {
 
 void mmu_mapear_pagina(unsigned int virtual,
 unsigned int cr3,
-unsigned int fisica, 
+unsigned int fisica,
 unsigned char attr) {
-	unsigned int *pdirectorio = (unsigned int*) cr3;
+	unsigned int *pdirectorio = (unsigned int*) CR3_BASE_ADDR(cr3);
 	unsigned int *ptabla;
 	int i = 0;
 	if(!PDE_PRESENT(pdirectorio[PDE_INDEX(virtual)])) {
@@ -35,8 +35,8 @@ unsigned char attr) {
 		pdirectorio[PDE_INDEX(virtual)] = (unsigned int) ptabla | (unsigned int) PG_USER | (unsigned int) PG_WRITE | (unsigned int) PG_PRESENT;
 		for(; i < ENTRIES_TABLE; i++)
 			ptabla[i] = 0x0;
-	} 
-	else 
+	}
+	else
 		ptabla = (unsigned int*) PDE_DIRECCION(pdirectorio[PDE_INDEX(virtual)]);
 	if(!PTE_PRESENT(ptabla[PTE_INDEX(virtual)]))
 		ptabla[PTE_INDEX(virtual)] = fisica | attr | PG_PRESENT;
@@ -69,7 +69,7 @@ unsigned int mmu_inicializar_dir_tarea( unsigned char* code, unsigned int dirmap
 		for(j = 0; j < PAGE_SIZE; j++) {
 			ptabla[j] = (i * (ENTRIES_TABLE) + j) * PAGE_SIZE + PAGE_PRESRW;
 		}
-		ptabla += ENTRIES_TABLE; 
+		ptabla += ENTRIES_TABLE;
 	}
 	for (; i < ENTRIES_TABLE; i++) {
 		pdirectorio[i] = 0;
@@ -77,7 +77,7 @@ unsigned int mmu_inicializar_dir_tarea( unsigned char* code, unsigned int dirmap
 
 	mmu_mapear_pagina(DIR_LOG_CODIGO_TAREA, (unsigned int) pdirectorio, dirmapa, PG_USER | PG_WRITE);
 	mmu_mapear_pagina(DIR_LOG_PAGINA_TAREA, (unsigned int) pdirectorio, dirmapa, PG_USER | PG_WRITE);
-	
+
 	mmu_mapear_pagina(DIR_LOG_AFUERA_MEMORIA, rcr3(), dirmapa, PG_KERNEL | PG_WRITE);
 
 	for(i = 0; i < PAGE_SIZE; i++) {

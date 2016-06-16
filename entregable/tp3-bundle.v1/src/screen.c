@@ -6,7 +6,7 @@
 */
 
 #include "screen.h"
-#include "colors.h"  
+#include "colors.h"
 
 jugador_visual visual_jugadores[CANT_JUGADORES] = {
     [SCREEN_IDX_JUGA] = {
@@ -89,12 +89,12 @@ void mapa_cambiar_color_fondo(const ca* ch, unsigned int x, unsigned int y) {
     for(; i < CANT_JUGADORES; i++) {
         if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y) {
             visual_jugadores[i].cursor.abajo.a = punto->a;
-        }  
+        }
     }
     for(; i < MAX_NUM_TAREAS; i++) {
         if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y) {
             cursores_paginas[i].abajo.a = punto->a;
-        }  
+        }
     }
 }
 
@@ -104,12 +104,12 @@ void mapa_cambiar_color_frente(const ca* ch, unsigned int x, unsigned int y) {
     for(; i < CANT_JUGADORES; i++) {
         if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y) {
             visual_jugadores[i].cursor.abajo.a = C_GET_FG(ch->a) | C_GET_BG(punto->a);
-        }  
+        }
     }
     for(; i < MAX_NUM_TAREAS; i++) {
         if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y) {
             cursores_paginas[i].abajo.a = C_GET_FG(ch->a) | C_GET_BG(punto->a);
-        }  
+        }
     }
 
 }
@@ -130,15 +130,15 @@ void screen_ubicar_debajo_cursores(const ca* ch, unsigned int x, unsigned int y)
     int i = 0;
     for(; i < CANT_JUGADORES; i++) {
         if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y) {
-            visual_jugadores[i].cursor.abajo.c = ch->c; 
+            visual_jugadores[i].cursor.abajo.c = ch->c;
             visual_jugadores[i].cursor.abajo.a = ch->a;
-        }  
+        }
     }
     for(; i < MAX_NUM_TAREAS; i++) {
         if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y) {
-            cursores_paginas[i].abajo.c = ch->c; 
+            cursores_paginas[i].abajo.c = ch->c;
             cursores_paginas[i].abajo.a = ch->a;
-        }  
+        }
     }
 
 }
@@ -162,7 +162,7 @@ void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, un
     }
 }
 
-void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr) {   
+void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     if( n > 9 ) {
       int a = n / 10;
@@ -173,7 +173,7 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     p[y][x].a = attr;
 }
 
-void print_int_sinattr(unsigned int n, unsigned int x, unsigned int y) {   
+void print_int_sinattr(unsigned int n, unsigned int x, unsigned int y) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     if( n > 9 ) {
       int a = n / 10;
@@ -208,14 +208,14 @@ void imprimir_pantalla(){
         for(j = 0; j < MARCADORB_BOX_ANCHO; j++)
             p[VIDEO_FILS - 1 - i][MARCADORB_BOX_OFFSETX + j] = MARCADORB_BOX_COLOR;
     }
-    
+
     // Dibujamos los relojes.
 
     for(i = 0; i < CANT_RELOJES_JUG; i++)
         p[RELOJESA_OFFSETY][RELOJESA_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
 
     print("<A", RELOJESA_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1), RELOJESA_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
-    
+
     for(i = 0; i < CANT_RELOJES_JUG; i++)
         p[RELOJESB_OFFSETY][RELOJESB_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
 
@@ -225,7 +225,7 @@ void imprimir_pantalla(){
         p[RELOJESS_OFFSETY][RELOJESS_OFFSETX + i*(ESPACIO_ENTRE_RELOJES + 1)].c = 'X';
 
     // Imprimimos las vidas
-    
+
 
     print("vidas", VIDASA_OFFSETX, VIDASA_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
     print("vidas", VIDASB_OFFSETX, VIDASB_OFFSETY, (BORDE_SUPERIOR_COLOR).a);
@@ -277,11 +277,11 @@ void screen_quitar_cursor(cursor* cur) {
     unsigned int i = 0;
     cursor* cur_misma_pos = NULL;
     for(; i < CANT_JUGADORES; i++)
-        if(visual_jugadores[i].cursor.posicion.x == cur->posicion.x && visual_jugadores[i].cursor.posicion.y == cur->posicion.y && &visual_jugadores[i].cursor != cur) 
+        if(visual_jugadores[i].cursor.posicion.x == cur->posicion.x && visual_jugadores[i].cursor.posicion.y == cur->posicion.y && &visual_jugadores[i].cursor != cur)
             cur_misma_pos = &visual_jugadores[i].cursor;
-        
+
     for(; i < MAX_NUM_TAREAS; i++)
-        if(cursores_paginas[i].posicion.x == cur->posicion.x && cursores_paginas[i].posicion.y == cur->posicion.y && &cursores_paginas[i] != cur) 
+        if(cursores_paginas[i].posicion.x == cur->posicion.x && cursores_paginas[i].posicion.y == cur->posicion.y && &cursores_paginas[i] != cur)
             cur_misma_pos = &cursores_paginas[i];
 
     if(cur_misma_pos == NULL) {
@@ -298,12 +298,12 @@ void screen_ubicar_cursor(cursor* cur, unsigned int x, unsigned int y) {
     y %= ALTO_MAPA;
 
     cursor* cursor_misma_pos = NULL;
-    for(; i < CANT_JUGADORES; i++) 
-        if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y && &visual_jugadores[i].cursor != cur) 
+    for(; i < CANT_JUGADORES; i++)
+        if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y && &visual_jugadores[i].cursor != cur)
             cursor_misma_pos = &visual_jugadores[i].cursor;
 
-    for(; i < MAX_NUM_TAREAS; i++) 
-        if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y && &visual_jugadores[i].cursor != cur) 
+    for(; i < MAX_NUM_TAREAS; i++)
+        if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y && &visual_jugadores[i].cursor != cur)
             cursor_misma_pos = &cursores_paginas[i];
 
     if(cursor_misma_pos == NULL) {
@@ -356,6 +356,11 @@ void screen_infectar_sana(int jug, unsigned int x, unsigned int y) {
 void screen_infectar_infectadora(int jug, unsigned int x, unsigned int y) {
     jugador_visual* v_jug = screen_obtener_visual_jugador(jug);
     mapa_cambiar_color_frente(&v_jug->tarea_infectada, x, y);
+}
+
+void screen_matar(unsigned int x, unsigned int y) {
+  screen_mapa_imprimir(&CA_MAPA, x, y);
+  screen_ubicar_debajo_cursores(&CA_MAPA, x, y);
 }
 
 void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {

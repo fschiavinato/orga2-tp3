@@ -71,6 +71,7 @@
 #define CA_PAGINA_MAPEADA_JUGA              (ca){'A', C_BG_GREEN | C_FG_BLACK}
 #define CA_PAGINA_MAPEADA_JUGB              (ca){'B', C_BG_GREEN | C_FG_BLACK}
 
+#define CA_MAPA                             (ca){' ', C_BG_LIGHT_GREY | C_FG_BLACK}
 
 #include "colors.h"
 #include "defines.h"
@@ -97,8 +98,8 @@ typedef struct jugador_visual_t {
     ca cursor_pagina_visible;
     ca tarea_infectadora;
     ca tarea_infectada;
-    pos marcador_vidas; 
-    pos marcador; 
+    pos marcador_vidas;
+    pos marcador;
     unsigned int jug;
 } jugador_visual;
 
@@ -115,11 +116,11 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 
 void print_int_sinattr(unsigned int n, unsigned int x, unsigned int y);
 
-void screen_actualizar_vidas(int j, unsigned int vidas); 
+void screen_actualizar_vidas(int j, unsigned int vidas);
 
-void screen_actualizar_puntajes(); 
+void screen_actualizar_puntajes();
 
-void screen_actualizar_reloj(unsigned int queue_idx, unsigned int tarea_idx, unsigned int numero_reloj); 
+void screen_actualizar_reloj(unsigned int queue_idx, unsigned int tarea_idx, unsigned int numero_reloj);
 
 void screen_quitar_cursor(cursor* cur);
 
@@ -138,6 +139,8 @@ void screen_mapa_imprimir_tarea_infectadora(int jug, unsigned int x, unsigned in
 void screen_infectar_sana(int jug, unsigned int x, unsigned int y);
 
 void screen_infectar_infectadora(int jug, unsigned int x, unsigned int y);
+
+void screen_matar(unsigned int x, unsigned int y);
 
 void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y);
 
