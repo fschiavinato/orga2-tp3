@@ -32,7 +32,6 @@ extern sched_correr_siguiente_tarea
 %define KEY_L 0x26
 %define KEY_J 0x24
 %define KEY_RSHIFT 0x36
-
 %define KEY_Y 0x15
 
 ;;
@@ -210,6 +209,9 @@ _isr33:
     cmp al, KEY_L
     je mover_cursor
 
+    cmp al, KEY_Y
+    je start_end_modo_debug
+
     cmp al, KEY_RSHIFT
     je lanzar_tarea
 
@@ -230,6 +232,12 @@ lanzar_tarea:
     call game_lanzar
     add esp, 4
     jmp fin_isr33
+
+
+start_end_modo_debug:
+jmp fin_isr33
+
+
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;

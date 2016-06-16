@@ -102,6 +102,10 @@ typedef struct jugador_visual_t {
     unsigned int jug;
 } jugador_visual;
 
+typedef struct  store_screen{
+    ca sto_screen[VIDEO_FILS][VIDEO_COLS];
+} store_screen;
+
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
 
