@@ -38,7 +38,7 @@ jugador_visual visual_jugadores[CANT_JUGADORES] = {
     }
 };
 
-cursor paginas_mapeadas_visual[MAX_NUM_TAREAS]; // Usamos el mismo indice que en el arreglo de ts.
+cursor cursores_paginas[MAX_NUM_TAREAS]; // Usamos el mismo indice que en el arreglo de ts.
 
 unsigned char estados_relojes[CANT_ESTADOS_RELOJ+1] = {'\\','|','/','-', 'X'};
 
@@ -101,17 +101,15 @@ void screen_ubicar_debajo_cursores(const ca* ch, unsigned int x, unsigned int y)
             visual_jugadores[i].cursor.abajo.a = ch->a;
         }  
     }
-}
-
-void screen_ubicar_debajo_paginas_mapeadas(const ca* ch, unsigned int x, unsigned int y) {
-    int i = 0;
     for(; i < MAX_NUM_TAREAS; i++) {
-        if(paginas_mapeadas_visual[i].posicion.x == x && paginas_mapeadas_visual[i].posicion.y == y) {
-            paginas_mapeadas_visual[i].abajo.c = ch->c; 
-            paginas_mapeadas_visual[i].abajo.a = ch->a;
+        if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y) {
+            cursores_paginas[i].abajo.c = ch->c; 
+            cursores_paginas[i].abajo.a = ch->a;
         }  
     }
+
 }
+
 
 void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
@@ -202,8 +200,8 @@ void imprimir_pantalla(){
     screen_actualizar_vidas(JUGA, CANT_VIDAS);
     screen_actualizar_vidas(JUGB, CANT_VIDAS);
 
-    screen_ubicar_cursor(JUGA, CURSOR_POS_DEF_JUGA.x, CURSOR_POS_DEF_JUGA.y);
-    screen_ubicar_cursor(JUGB, CURSOR_POS_DEF_JUGB.x, CURSOR_POS_DEF_JUGB.y);
+    screen_ubicar_cursor(&screen_obtener_visual_jugador(JUGA)->cursor, CURSOR_POS_DEF_JUGA.x, CURSOR_POS_DEF_JUGA.y);
+    screen_ubicar_cursor(&screen_obtener_visual_jugador(JUGB)->cursor, CURSOR_POS_DEF_JUGB.x, CURSOR_POS_DEF_JUGB.y);
 }
 
 void screen_actualizar_vidas(int jug, unsigned int vidas) {
@@ -243,39 +241,58 @@ void screen_actualizar_reloj(unsigned int queue_idx, unsigned int tarea_idx, uns
 }
 
 
-void screen_quitar_cursor(int jug) {
-    jugador_visual* v_jug  = screen_obtener_visual_jugador(jug);
+void screen_quitar_cursor(cursor* cur) {
     unsigned int i = 0;
-    for(; i < CANT_JUGADORES && (visual_jugadores[i].cursor.posicion.x != v_jug->cursor.posicion.x || visual_jugadores[i].cursor.posicion.y != v_jug->cursor.posicion.y || &visual_jugadores[i] == v_jug); i++);
-    if(i == CANT_JUGADORES) {
-        screen_mapa_imprimir(&v_jug->cursor.abajo, v_jug->cursor.posicion.x, v_jug->cursor.posicion.y);
+    cursor* cur_misma_pos = NULL;
+    for(; i < CANT_JUGADORES; i++)
+        if(visual_jugadores[i].cursor.posicion.x == cur->posicion.x && visual_jugadores[i].cursor.posicion.y == cur->posicion.y && &visual_jugadores[i].cursor != cur) 
+            cur_misma_pos = &visual_jugadores[i].cursor;
+        
+    for(; i < MAX_NUM_TAREAS; i++)
+        if(cursores_paginas[i].posicion.x == cur->posicion.x && cursores_paginas[i].posicion.y == cur->posicion.y && &cursores_paginas[i] != cur) 
+            cur_misma_pos = &cursores_paginas[i];
+
+    if(cur_misma_pos == NULL) {
+        screen_mapa_imprimir(&cur->abajo, cur->posicion.x, cur->posicion.y);
     }
     else {
-        screen_mapa_imprimir(&visual_jugadores[i].cursor.visible, v_jug->cursor.posicion.x, v_jug->cursor.posicion.y);
+        screen_mapa_imprimir(&cur_misma_pos->visible, cur->posicion.x, cur->posicion.y);
     }
 }
 
-void screen_ubicar_cursor(int jug, unsigned int x, unsigned int y) {
-    jugador_visual* v_jug = screen_obtener_visual_jugador(jug);
+void screen_ubicar_cursor(cursor* cur, unsigned int x, unsigned int y) {
     int i = 0;
-    for(; i < CANT_JUGADORES && (visual_jugadores[i].cursor.posicion.x != x || visual_jugadores[i].cursor.posicion.y != y || &visual_jugadores[i] == v_jug); i++);
-    if(i == CANT_JUGADORES) {
-        v_jug->cursor.abajo.c = screen_mapa_obtener(x, y)->c;
-        v_jug->cursor.abajo.a = screen_mapa_obtener(x, y)->a;
-        v_jug->cursor.visible.a = screen_mapa_obtener(x, y)->a;
+    cursor* cursor_misma_pos = NULL;
+    for(; i < CANT_JUGADORES; i++) 
+        if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y && &visual_jugadores[i].cursor != cur) 
+            cursor_misma_pos = &visual_jugadores[i].cursor;
+
+    for(; i < MAX_NUM_TAREAS; i++) 
+        if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y && &visual_jugadores[i].cursor != cur) 
+            cursor_misma_pos = &cursores_paginas[i];
+
+    if(cursor_misma_pos == NULL) {
+        cur->abajo.c = screen_mapa_obtener(x, y)->c;
+        cur->abajo.a = screen_mapa_obtener(x, y)->a;
+        cur->visible.a = screen_mapa_obtener(x, y)->a;
     }
     else {
-        v_jug->cursor.abajo.c = visual_jugadores[i].cursor.abajo.c;
-        v_jug->cursor.abajo.a = visual_jugadores[i].cursor.abajo.a;
-        v_jug->cursor.visible.a = visual_jugadores[i].cursor.visible.a;
+        cur->abajo.c = cursor_misma_pos->abajo.c;
+        cur->abajo.a = cursor_misma_pos->abajo.a;
+        cur->visible.a = cursor_misma_pos->visible.a;
     }
-    v_jug->cursor.posicion.x = x % ANCHO_MAPA;
-    v_jug->cursor.posicion.y = y % ALTO_MAPA;
-    screen_mapa_imprimir(&v_jug->cursor.visible, v_jug->cursor.posicion.x, v_jug->cursor.posicion.y);
+    cur->posicion.x = x % ANCHO_MAPA;
+    cur->posicion.y = y % ALTO_MAPA;
+    screen_mapa_imprimir(&cur->visible, cur->posicion.x, cur->posicion.y);
 }
 
 pos* screen_obtener_pos_cursor(int jug) {
     return &screen_obtener_visual_jugador(jug)->cursor.posicion;
+}
+
+cursor* screen_cursor_pagina_tarea_actual() {
+    return &cursores_paginas[sched_info_tarea_actual()->ts_idx];
+
 }
 
 jugador_visual* screen_obtener_visual_jugador(int jug) {
@@ -291,56 +308,17 @@ jugador_visual* screen_obtener_visual_jugador(int jug) {
     return &visual_jugadores[idx];
 }
 
-void screen_mapa_ubicar_pagina(unsigned int x, unsigned int y) {
-    cursor* pmv = &paginas_mapeadas_visual[sched_info_tarea_actual()->ts_idx];
-    unsigned int i = 0;
-    for(; i < MAX_NUM_TAREAS && (paginas_mapeadas_visual[i].posicion.x != pmv->posicion.x || paginas_mapeadas_visual[i].posicion.y != pmv->posicion.y || &paginas_mapeadas_visual[i] == pmv); i++);
-    if(i < MAX_NUM_TAREAS) {
-        pmv->abajo.c = paginas_mapeadas_visual[i].abajo.c;
-        pmv->abajo.a = paginas_mapeadas_visual[i].abajo.a;
-    }
-    else {
-        pmv->abajo.c = screen_mapa_obtener(x, y)->c; 
-        pmv->abajo.a = screen_mapa_obtener(x, y)->a;
-    }
-    screen_ubicar_debajo_cursores(&pmv->visible, x, y);
-
-    for(; i < CANT_JUGADORES && (visual_jugadores[i].cursor.posicion.x != pmv->posicion.x || visual_jugadores[i].cursor.posicion.y != pmv->posicion.y); i++);
-    if(i == CANT_JUGADORES) {
-        screen_mapa_imprimir_sinattr(&pmv->visible, pmv->posicion.x, pmv->posicion.y);
-    }
-}
-
-void screen_mapa_quitar_pagina() {
-    cursor* pmv = &paginas_mapeadas_visual[sched_info_tarea_actual()->ts_idx];
-    ca* nuevo_ca = &pmv->abajo;
-    unsigned int i = 0;
-    for(; i < MAX_NUM_TAREAS && (paginas_mapeadas_visual[i].posicion.x != pmv->posicion.x || paginas_mapeadas_visual[i].posicion.y != pmv->posicion.y || &paginas_mapeadas_visual[i] == pmv); i++);
-    if(i < MAX_NUM_TAREAS) {
-        nuevo_ca = &paginas_mapeadas_visual[i].visible;
-    }
-    screen_ubicar_debajo_cursores(nuevo_ca, pmv->posicion.x, pmv->posicion.y);
-
-    for(; i < CANT_JUGADORES && (visual_jugadores[i].cursor.posicion.x != pmv->posicion.x || visual_jugadores[i].cursor.posicion.y != pmv->posicion.y); i++);
-    if(i == CANT_JUGADORES) {
-        screen_mapa_imprimir_sinattr(nuevo_ca, pmv->posicion.x, pmv->posicion.y);
-    }
-}
-
 void screen_mapa_imprimir_tarea_infectadora(int jug, unsigned int x, unsigned int y) {
     screen_mapa_imprimir(&screen_obtener_visual_jugador(jug)->tarea_infectadora, x, y);
     screen_ubicar_debajo_cursores(&screen_obtener_visual_jugador(jug)->tarea_infectadora, x, y);
-    screen_ubicar_debajo_paginas_mapeadas(&CA_TAREA_SANA, x, y);
 }
 
 void screen_infectar(int jug) {
     screen_mapa_imprimir_sinattr(&screen_obtener_visual_jugador(jug)->tarea_infectada, sched_info_tarea_actual()->pos_x, sched_info_tarea_actual()->pos_y);
     screen_ubicar_debajo_cursores(&screen_obtener_visual_jugador(jug)->tarea_infectada, sched_info_tarea_actual()->pos_x, sched_info_tarea_actual()->pos_y);
-    screen_ubicar_debajo_paginas_mapeadas(&CA_TAREA_SANA, sched_info_tarea_actual()->pos_x, sched_info_tarea_actual()->pos_y);
 }
 
 void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
     screen_mapa_imprimir_sincar(&CA_TAREA_SANA, x, y);
     screen_ubicar_debajo_cursores(&CA_TAREA_SANA, x, y);
-    screen_ubicar_debajo_paginas_mapeadas(&CA_TAREA_SANA, x, y);
 }

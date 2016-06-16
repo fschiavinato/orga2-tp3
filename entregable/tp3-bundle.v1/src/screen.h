@@ -94,7 +94,7 @@ typedef struct cursor_t {
 
 typedef struct jugador_visual_t {
     cursor cursor;
-    ca pagina_mapeada;
+    ca cursor_pagina_visible;
     ca tarea_infectadora;
     ca tarea_infectada;
     pos marcador_vidas; 
@@ -102,13 +102,6 @@ typedef struct jugador_visual_t {
     unsigned int jug;
 } jugador_visual;
 
-typedef struct pagina_mapeada_t {
-    cursor cursor;
-    ca pagina_mapeada;
-    ca tarea_infectadora;
-    ca tarea_infectada;
-    pos marcador_vidas; 
-} tarea_visual;
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
 
@@ -124,11 +117,13 @@ void screen_actualizar_puntajes();
 
 void screen_actualizar_reloj(unsigned int queue_idx, unsigned int tarea_idx, unsigned int numero_reloj); 
 
-void screen_quitar_cursor(int j);
+void screen_quitar_cursor(cursor* cur);
 
-void screen_ubicar_cursor(int j, unsigned int x, unsigned int y);
+void screen_ubicar_cursor(cursor* cur, unsigned int x, unsigned int y);
 
 pos* screen_obtener_pos_cursor(int j);
+
+cursor* screen_cursor_pagina_tarea_actual();
 
 jugador_visual* screen_obtener_visual_jugador(int jug);
 

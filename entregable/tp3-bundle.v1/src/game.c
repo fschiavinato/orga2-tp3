@@ -59,7 +59,7 @@ unsigned int es_jugador(int jug) {
 void game_mover_cursor(int jugador, direccion dir) {
     int desp_x = 0;
     int desp_y = 0;
-    pos* pos_cursor;
+    cursor* cur_j;
     switch(dir) {
         case IZQ:
             desp_x = -1;
@@ -74,9 +74,9 @@ void game_mover_cursor(int jugador, direccion dir) {
             desp_y = 1;
             break;
     }
-    pos_cursor = screen_obtener_pos_cursor(jugador);
-    screen_quitar_cursor(jugador);
-    screen_ubicar_cursor(jugador, pos_cursor->x + desp_x, pos_cursor->y + desp_y);
+    cur_j = &screen_obtener_visual_jugador(jugador)->cursor;
+    screen_quitar_cursor(cur_j);
+    screen_ubicar_cursor(cur_j, cur_j->posicion.x + desp_x, cur_j->posicion.y + desp_y);
 }
 
 void game_lanzar(unsigned int jugador) {
@@ -108,8 +108,13 @@ void game_donde(unsigned int* pos) {
 }
 
 void game_mapear(int x, int y) {
-    screen_mapa_quitar_pagina();
+    jugador_visual* v_jug = screen_obtener_visual_jugador(sched_info_tarea_actual()->virus);
+    cursor* cur_pag = screen_cursor_pagina_tarea_actual();
+
+    cur_pag->visible.c = v_jug->cursor_pagina_visible.c;
+
+    screen_quitar_cursor(screen_cursor_pagina_tarea_actual());
     mmu_mapear_pagina(DIR_LOG_PAGINA_TAREA, rcr3(), (unsigned int) mmu_dir_mapa(x,y), PG_USER | PG_WRITE);
-    screen_mapa_ubicar_pagina(x, y);
+    screen_ubicar_cursor(screen_cursor_pagina_tarea_actual(), x, y);
 }
 

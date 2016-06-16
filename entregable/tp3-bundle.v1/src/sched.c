@@ -58,7 +58,7 @@ unsigned char* sched_proxima_tarea() {
     unsigned int iT = (run_queues[iQ].tarea_actual+1) % run_queues[iQ].cant;
 
     tarea* actual = sched_info_tarea_actual();
-    if(actual != NULL) {
+    if(run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].viva == TRUE) {
         actual->estado_reloj++;
         actual->estado_reloj %= CANT_ESTADOS_RELOJ;
         screen_actualizar_reloj(current_queue, run_queues[current_queue].tarea_actual, actual->estado_reloj);
@@ -132,6 +132,7 @@ unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_c
         q->tareas[iT].pos_y = y;
         crear_contexto_usr(&ts_tareas[q->ts_start_idx + iT], dir_phy_codigo, mmu_dir_mapa(x, y));
         q->tareas[iT].estado_reloj = 0;
+        q->tareas[iT].virus = q->jug;
         q->tareas[iT].viva = TRUE;
     }
     return iT < q->cant && !lugar_ocupado;
@@ -145,6 +146,7 @@ void sched_matar_tarea_actual() {
     }
     sched_idle();
     screen_actualizar_puntajes();
+    screen_actualizar_reloj(current_queue, run_queues[current_queue].tarea_actual, CANT_ESTADOS_RELOJ);
 }
 
 void sched_infectar(int jug) {
