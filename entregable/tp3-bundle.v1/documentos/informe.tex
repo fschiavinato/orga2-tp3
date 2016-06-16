@@ -157,7 +157,6 @@ Formato de str_gdt_entry
 
 \begin{codesnippet}
 \begin{verbatim}
-
 typedef struct str_gdt_entry {
     unsigned short  limit_0_15;
     unsigned short  base_0_15;
@@ -172,9 +171,7 @@ typedef struct str_gdt_entry {
     unsigned char   db:1;
     unsigned char   g:1;
     unsigned char   base_31_24;
-} __attribute__((__packed__, aligned (8))) gdt_entry;
-
-    
+} __attribute__((__packed__, aligned (8))) gdt_entry;    
 \end{verbatim}
 \end{codesnippet}
 
@@ -183,7 +180,6 @@ Alli, al nulo se le pone todo 0 y a los otros se le pone diferntes parametros de
 
 \begin{codesnippet}
 \begin{verbatim}
-
 [GDT_IDX_KERNEL_CODE_DESC] = (gdt_entry) {
         (unsigned short)    SEG_LIMIT_0_15(0x36E00),    /* limit[0:15]  */
         (unsigned short)    SEG_BASE_0_15(0x0),         /* base[0:15]   */
@@ -198,7 +194,6 @@ Alli, al nulo se le pone todo 0 y a los otros se le pone diferntes parametros de
         (unsigned char)     SEG_MOD_32b,                /* db           */
         (unsigned char)     SEG_GRAN_4K,                /* g            */
         (unsigned char)     SEG_BASE_24_31(0x0),        /* base[31:24]  */
-
 \end{verbatim}
 \end{codesnippet}
 
@@ -442,7 +437,9 @@ unsigned char attr) {
 	tlbflush();
 \end{verbatim}
 \end{codesnippet}
+
 \
+
 Declaramos un puntero pdirectorio, al cual le pasamos el cr3(), y otro que llamamos ptabla. y luego, si la entrada del directorio(apuntada por el pdirectorio) de paginas solicitada por el virtual(los primeros 10 bits de virtual) no esta presente, entonces se pide la direccion de la proxima pagina fisica libre y se la asinga a ptablas. A su vez, se coloca ptablas en la entrada del pdirectorio donde dio que no estaba, (con los atributos de usuario, presente y escribible), y se llena el contenido de la tabla de paginas apuntada por esta ptabla de 0.
 
 Si por el contrario esta presente la entrada, ptabla le ponemos la direccion que de la entrada, y si no esta presente la entrada de la tabla de paginas pasada en virtual, se coloca en esa entrada la direccion de la pagina fisica pasada (efectivamente, ponienedola como direccion destino de la paginacion de la direccion virtual dada), junto a los atributos pasados y el atributo de presente.
@@ -504,21 +501,180 @@ Para hacerlo utilizamos la funcion idt_inicializar que habiamos usado antes, exp
 
 No vamos a cargar las tss, en su lugar vamos a hacerlo a mano. Para ello tenemos la funcion crear_contexto_usr en el archivo ctx.asm.
 
-Para realizar el cambio "a mano" se utiliza una única entrada de la GDT, en la que se guardan los únicos datos necesarios para realizar el cambio, que son necesarios guardar en la TSS con este modo de manejar el Scheduler, que son el ESP0 y el SS0, o sea los datos correspondientes al stack de nivel cero (kernel). El resto de las entradas de la TSS se guardan en una estructura auxiliar llamada TS que permiten hacer el cambio. 
+Para realizar el cambio "a mano" se utiliza una única entrada de la GDT, en la que se guardan los únicos datos necesarios para realizar el cambio, que son necesarios guardar en la TSS con este modo de manejar el Scheduler, que son el ESP0 y el SS0, o sea los datos correspondientes al stack de nivel cero (kernel).
+Para ser consistentes, la entrada declarada en la GDT posee los atributos de ser de sistema, ser una entrada de interrupt task(no busy al declararla), tener privilegio 0(kernel) y el tamano que requerimos(1M)
 
-La idea de la funcion es en realizar las mismas funciones que realizaria cambio de  tss, el de guardar el contexto de una tarea tiene al momento que el sheduler la desaloja, y de cargar el contexto guardado de la proxima tarea a  ejecutar por el sheduler, de manera de que la interrupcion sea transparente para la tarea. 
+Para declarar esta entrada usamos una funcion llamada gdt_inicializar_tss(), ya que no podemos completar estos valores con la inicializacion estatica, en la que ademas utilizamos un struct llamado str_gdt_entry2d para poner los valores, esto es, una estructura que define la entrada en la gdt pero esta solamente separada en los las dos posiciones de memoria que requiere una entrada.(lo y high)
 
-Vamos a
+ El resto de las entradas de la TSS se guardan en una estructura auxiliar llamada TS que permiten hacer el cambio. 
+
+Antes de eso, el kernel actualiza la gdt y luego de setear el correcto funcionamiento de las interrupciones(sin habilitarlas todavia); llama a sched_idle, una funcion del scheduler que deja seteado la tarea idle.(mientras no haya cambio, corre la dir de la tarea del ubicada en la ts_tareas[TS_IDX_IDLE].esp0(siendo TS_IDX_IDLE la ultima entrada de la ts ), y el kernel llama a sched sched_inicializar.
+
+Esta funcion, como su nombre lo indica, inicializa el scheduler organiza las tareas, es decir, el quantum de tiempo que recibe cada una, y el orden a correr, asi como tambienque se encarga de cambiar las tareas cuando el quantum que este les asigna haya terminado.
 
 
 
-	 
+\begin{codesnippet}
+\begin{verbatim}		
+	void sched_inicializar() {
+    int i = 0;
+    unsigned int ts_idx = TS_START_IDX_SANAS;
+    unsigned int x;
+    unsigned int y;
+   for(; i < MAX_NUM_TAREAS_SANAS; i++, ts_idx++) {
+        do {
+            y = rand() % ALTO_MAPA;
+            x = rand() % ANCHO_MAPA;
+        } 
+  while(!sched_correr_tarea(SCHED_QUEUE_IDX_SANAS, (unsigned char*) DIR_PHY_CODIGO_SANA, x, y));
+        screen_mapa_imprimir_tarea_sana(x, y);
+    }
+}
+\end{verbatim}
+\end{codesnippet}
 
+
+
+El sheduler_inicializar se fija para todas las sanas si se esta corriendo esa tarea en el mapa, y si no simplemente se ocupa de imprimir las tareas sanas para que se sigan viendo en pantalla. Osea, recorre las tareas que estan definidas en las sanas hasta que alguna interrupcion haga otra cosa, y si no las corre, la imprime.
+
+Contamos con una estructura llamada queue, donde estan, tanto para las tareas sanas como para las del jugador a y las del jugadorb, la max acantidad que puede haber, corriendo, su lugar en ts, e; de que tipo son, y su tarea en si misma. Con esto podemos ver en cual tarea estamos.
+
+
+El sheduler, para fijarse si esta corriendo, y para correr una tarea,  usa la funcion sched_correr_tarea, el cual funciona de la siguiente manera:
+
+\begin{codesnippet}
+\begin{verbatim}		
+	unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_codigo,
+	unsigned int x, unsigned int y) {
+    unsigned int iT = 0;
+    unsigned int iQ = 0;
+    unsigned int lugar_ocupado = 0;
+    queue* q = &run_queues[idx_queue];
+    for(; iQ < NUM_QUEUES ; iQ++) 
+        for(iT = 0; iT < run_queues[iQ].cant; iT++) {
+            lugar_ocupado = lugar_ocupado || (run_queues[iQ].tareas[iT].pos_x == x 
+            && run_queues[iQ].tareas[iT].pos_y == y &&
+             run_queues[iQ].tareas[iT].viva == TRUE);
+        }
+
+    for(iT = 0; iT < q->cant && q->tareas[iT].viva == TRUE; iT++);
+    if(iT < q->cant && !lugar_ocupado)
+    {
+        q->tareas[iT].ts_idx = q->ts_start_idx + iT;
+        q->tareas[iT].pos_x = x;
+        q->tareas[iT].pos_y = y;
+        crear_contexto_usr(&ts_tareas[q->ts_start_idx + iT], dir_phy_codigo, mmu_dir_mapa(x, y));
+        q->tareas[iT].estado_reloj = 0;
+        q->tareas[iT].virus = q->jug;
+        q->tareas[iT].viva = TRUE;
+    }
+    return iT < q->cant && !lugar_ocupado;
+}
+
+\end{verbatim}
+\end{codesnippet}
+
+Lo que realiza esta funcion es,  poner en q la direccion de la tarea a ejecutar, y luego, fijarse para todas las tareas, donde si donde indica esta x e y esta la tarea a correr o ocupado el lugar, y si no lo esta, se guardan en tareas[it] datos que nos van a importar de esta tarea cuando regresemos,  se la posiciona a donde nos vino por parametro, y se llama a crear_contexto_usr que cambia la tarea a la actual, y retorna bool de si hizo eso.(los requerimientos para realizar la accion)
+
+
+
+La idea de la funcion crear_contexto_usuario es en realizar las mismas funciones que realizaria cambio de  tss, el de guardar el contexto de una tarea tiene al momento que el sheduler la desaloja, y de cargar el contexto guardado de la proxima tarea a  ejecutar por el sheduler, de manera de que la interrupcion sea transparente para la tarea. 
+
+
+La funcion en si misma genera el direccionamiento al mapa y la inicializacion de la paginacion lamando a  mmu_inicializar_dir_tarea, asi como a mmu_nueva_pila_kernel, que como dice, genera la pila de kernel que va a necesitar. Carga los registros con la info necesaria:
+
+el ss con donde, en disco de datos de gdt, y los privilegios de usuario, 
+el esp con dir de pila de tarea
+los flags con los de ctx
+el cs con el lugar de disco de codigo de gdt, y provolegops de usuario por ser tarea
+\begin{itemize}
+
+
+\item el eip con la direccion logica de la tarea(codigo)
+\item registros generales en 0
+\item ds con dir de disco de datos de gdt
+\item ebp0  en dir de la nueva pila de nivel 0 de la tarea
+\item cr3 con la direccion del directorio de paginas generado
+\item ebx con direccion de tarea
+\item esp0  en dir de la nueva pila de nivel 0 de la tarea
+
+\end{itemize}
+
+dejando asi la tarea cambiada.
+
+
+En el sheduler, para cambiar tareas cuando se deba, se debe poder fijar la siguiente.
+
+Para fijarse la proxima tarea a ejecutar, el sheduler usa la funcion sched_proxima_tarea() que funciana de la siguiente  manera:
+
+
+\begin{codesnippet}
+\begin{verbatim}		
+unsigned char* sched_proxima_tarea() {
+    unsigned char* res = ts_tareas[TS_IDX_IDLE].esp0;
+    unsigned int cT = 0, cQ = 0;
+    unsigned int iQ = (current_queue+1) % NUM_QUEUES;
+    unsigned int iT = (run_queues[iQ].tarea_actual+1) % run_queues[iQ].cant;
+
+    tarea* actual = sched_info_tarea_actual();
+    if(run_queues[current_queue].tareas[run_queues[current_queue].ta
+    rea_actual].viva == TRUE) {
+        actual->estado_reloj++;
+        actual->estado_reloj %= CANT_ESTADOS_RELOJ;
+        screen_actualizar_reloj(current_queue, run_queues[current_queue].ta
+        rea_actual, actual->estado_reloj);
+    }
+
+    if(!parado) {
+        while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE) {
+            cQ += (++cT) / run_queues[iQ].cant;
+            cT %= run_queues[iQ].cant;
+            iQ = (current_queue+cQ) % NUM_QUEUES;
+            iT = (run_queues[iQ].tarea_actual+1+cT) % run_queues[iQ].cant;
+
+        }
+        if(cQ <= NUM_QUEUES) {
+            current_queue = iQ;
+            run_queues[current_queue].tarea_actual = iT;
+            res = ts_tareas[run_queues[current_queue].tareas[run_queues[current_queue].ta
+            rea_actual].ts_idx].esp0;
+            en_idle = 0;
+        }
+        else {
+            en_idle = 1;
+        }
+    }
+    else {
+        res = sched_ts_tarea_actual()->esp0;
+    }
+    return res;
+} 
+\end{verbatim}
+\end{codesnippet}
+
+Que devuelve la dir de la prox tarea. Primero pone en res la dir de la tarea anterior que se habia corrido, y tambien pone en IQ la siguiente cola (de sanas a jugA, de jugA a jugB ) y en iT, la tarea siguiente a la ultima que se habia corrido de esa cola.(que es la que se tiene que correr)
+
+Luego conseguimos la info de la tarea actual, (sched_info_tarea_actual(), nos devuelve la cola y la posicion de esta en la cual esta esta tarea, asi como si es idle (en este caso no estaria en las colas) o no). Al tener esta informacion, podemos ver si la tarea sigue viva.
+
+De estar viva, actualizamos su reloj, y luego, mientras el scheduler no este parado,(se acabo el tiempo) pone a iQ  e IT apuntando a los de la tarea actual, y res apuntando a al esp0 de la tarea actual (pila de kernel) y se lo devuelve. En caso de haberse acabado el tiempo, se usa el iQ y el iT para rellenar la curent quenue la tarea_actual de la quenue y el resultado a su pila de codigo kernel.
+
+Ademas, si se supero el NUM_QUEUES o la tarea muere, entonces se le pone en_idle=1 para que sheduler corra la tarea idle.
+
+
+ se procede a buscar la siguientem moviendo los contadores lo necesario.(Si esta parado, se apunta a la siguiente, sino hace algunas consideraciones de tamano).
+ 
+Ademas, en el sheduler mata tareas con la funcion shed_matar_tarea_actual, que pone su estado de vivo en falso ()en caso de no ser null), pone a correr la tarea idle hasta que se acabe el quorum y actualiza puntajes y relojes. 
+El sheduler tambien se encarga de cambiar los estado de las tareas si estas infectan o so infectadas, y contar la cantidad de infectados de un virus que hay en todo momento.
    
 
 \subsection{Ejercicio 7}
 
 
+En esta seccion vamos a explicar la logica del juego en si y como utilizamos y/o modificamos los archivos para poder modificar esto.
+
+
+Cuando se produzca alguna interrupcion que agrege tareas,(las de los shifts), 
+la rutina de interrupcion de teclado de isr llama a game_lanzar, que identifica el jugador y la direccion fisica de donde vino la interrupcion, y el lugar donde estaba el cursor, (llama a funciones auxiliares que  guardan/muestran esa informacion) y si 
 
 
 
