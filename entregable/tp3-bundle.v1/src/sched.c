@@ -54,28 +54,29 @@ void sched_inicializar() {
 unsigned char* sched_proxima_tarea() {
     unsigned char* res = ts_tareas[TS_IDX_IDLE].esp0;
     unsigned int cT = 0, cQ = 0;
-    unsigned int iQ = (current_queue+1) % NUM_QUEUES;
-    unsigned int iT = (run_queues[iQ].tarea_actual+1) % run_queues[iQ].cant;
+    unsigned int iQ;
+    unsigned int iT;
 
     tarea* actual = sched_info_tarea_actual();
-    if(run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].viva == TRUE) {
+    if(actual->viva == TRUE) {
         actual->estado_reloj++;
         actual->estado_reloj %= CANT_ESTADOS_RELOJ;
         screen_actualizar_reloj(current_queue, run_queues[current_queue].tarea_actual, actual->estado_reloj);
     }
 
     if(!parado) {
-        while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE) {
-            cQ += (++cT) / run_queues[iQ].cant;
-            cT %= run_queues[iQ].cant;
-            iQ = (current_queue+cQ) % NUM_QUEUES;
-            iT = (run_queues[iQ].tarea_actual+1+cT) % run_queues[iQ].cant;
+        do {
+            iQ = (current_queue + cQ + 1) % NUM_QUEUES;
+            iT = (run_queues[iQ].tarea_actual + cT + 1) % run_queues[iQ].cant;
+            cQ += (++cT) / (run_queues[iQ].cant + 1);
+            cT %= run_queues[iQ].cant + 1;
 
-        }
+        } while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE);
+
         if(cQ <= NUM_QUEUES) {
             current_queue = iQ;
             run_queues[current_queue].tarea_actual = iT;
-            res = ts_tareas[run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual].ts_idx].esp0;
+            res = ts_tareas[run_queues[iQ].tareas[iT].ts_idx].esp0;
             en_idle = 0;
         }
         else {
@@ -90,13 +91,11 @@ unsigned char* sched_proxima_tarea() {
 
 struct str_ts* sched_ts_tarea_actual() {
     tarea* t =  sched_info_tarea_actual();
-    return t != NULL? &ts_tareas[t->ts_idx]: &ts_tareas[TS_IDX_IDLE];
+    return en_idle? &ts_tareas[TS_IDX_IDLE]: &ts_tareas[t->ts_idx];
 } 
 
 tarea* sched_info_tarea_actual() {
     tarea* res = &run_queues[current_queue].tareas[run_queues[current_queue].tarea_actual];
-    if(en_idle == TRUE) 
-        res = NULL;
     return res;
 }
 

@@ -326,8 +326,10 @@ void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
 void guardar_pantalla( store_screen store ){
     int i, j;
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-     for(i = 0; i < VIDEO_FILS; i++)
-        for(j = 0; j < VIDEO_COLS ; j++)
+    for(i = 0; i < VIDEO_FILS; i++) {
+        for(j = 0; j < VIDEO_COLS ; j++) {
             store.sto_screen[i][j].c = p[i][j].c;
             store.sto_screen[i][j].a =p[i][j].a;
+        }
+    }
  }//los registros?
