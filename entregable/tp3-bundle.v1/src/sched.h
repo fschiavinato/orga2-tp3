@@ -22,7 +22,6 @@ typedef struct tarea_t {
     unsigned int pos_x;
     unsigned int pos_y;
     unsigned int estado_reloj;
-    unsigned char mapeo;
 } tarea;
 
 typedef struct queue_t {

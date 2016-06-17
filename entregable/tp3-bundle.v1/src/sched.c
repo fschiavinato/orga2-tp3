@@ -137,10 +137,9 @@ unsigned int sched_correr_tarea(unsigned int idx_queue, unsigned char* dir_phy_c
         q->tareas[iT].ts_idx = q->ts_start_idx + iT;
         q->tareas[iT].pos_x = x;
         q->tareas[iT].pos_y = y;
-        crear_contexto_usr(&ts_tareas[q->ts_start_idx + iT], dir_phy_codigo, mmu_dir_mapa(x, y));
+        crear_contexto_usr(&ts_tareas[q->tareas[iT].ts_idx], dir_phy_codigo, mmu_dir_mapa(x, y));
         q->tareas[iT].estado_reloj = 0;
         q->tareas[iT].virus = q->jug;
-        q->tareas[iT].mapeo = FALSE;
         q->tareas[iT].viva = TRUE;
 
     }

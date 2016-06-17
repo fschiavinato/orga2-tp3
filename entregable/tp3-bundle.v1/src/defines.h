@@ -159,7 +159,7 @@
 #define DIR_PHY_CODIGO_JUGB                 DIR_PHY_CODIGO_IDLE + 2*PAGE_SIZE
 #define DIR_PHY_CODIGO_SANA                 DIR_PHY_CODIGO_IDLE + 3*PAGE_SIZE
 
-#define DIR_PHY_MAPA	                    0x400000
+#define DIR_PHY_MAPA	                      0x400000
 
 /* Scheduler */
 /* -------------------------------------------------------------------------- */

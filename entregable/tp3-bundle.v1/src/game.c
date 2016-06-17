@@ -121,11 +121,11 @@ void game_mapear(int x, int y) {
 
     cur_pag->visible.c = v_jug->cursor_pagina_visible.c;
 
-    if(sched_info_tarea_actual()->mapeo == TRUE) {
+    if(cur_pag->en_mapa == TRUE) {
         screen_quitar_cursor(cur_pag);
     }
     else {
-        sched_info_tarea_actual()->mapeo = TRUE;
+        cur_pag->en_mapa = TRUE;
     }
     mmu_unmapear_pagina(DIR_LOG_PAGINA_TAREA, rcr3());
     mmu_mapear_pagina(DIR_LOG_PAGINA_TAREA, rcr3(), (unsigned int) mmu_dir_mapa(x, y), PG_USER | PG_WRITE);

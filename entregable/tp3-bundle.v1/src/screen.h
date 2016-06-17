@@ -113,6 +113,7 @@ typedef struct cursor_t {
     pos posicion;
     ca visible;
     ca abajo; // guardamos lo que está debajo del cursor.
+    unsigned char en_mapa;
 } cursor;
 
 typedef struct jugador_visual_t {
