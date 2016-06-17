@@ -109,5 +109,7 @@ void mmu_inicializar_dir_kernel() {
 }
 
 unsigned char* mmu_dir_mapa(unsigned int x, unsigned int y) {
+    x %= ANCHO_MAPA;
+    y %= ALTO_MAPA;
     return (unsigned char*) (DIR_PHY_MAPA + x*PAGE_SIZE + y*PAGE_SIZE*ANCHO_MAPA);
 }

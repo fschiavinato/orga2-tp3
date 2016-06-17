@@ -40,8 +40,6 @@ void task() {
       syscall_soy(0x325);
       x = newrand(&val) % 80;
       y = newrand(&val) % 44;
-      x = 0;
-      y = 0;
       syscall_mapear(x,y);
       for(i=0;i<1024;i++) otro[i] = yo[i];
   }
