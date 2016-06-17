@@ -77,7 +77,6 @@ _isr%1:
     push es
     push fs
     push gs
-    push ss
     mov eax, cr0
     push eax
     mov eax, cr2

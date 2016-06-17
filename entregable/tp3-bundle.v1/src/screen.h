@@ -64,9 +64,9 @@
 #define CA_TAREA_INFECTADORA_JUGA           (ca){'*', C_BG_LIGHT_GREY | C_FG_BLUE}
 #define CA_TAREA_INFECTADORA_JUGB           (ca){'*', C_BG_LIGHT_GREY | C_FG_RED}
 
-#define CA_TAREA_INFECTADA_JUGA             (ca){' ', C_BG_BLUE | C_FG_BLACK}
-#define CA_TAREA_INFECTADA_JUGB             (ca){' ', C_BG_RED | C_FG_BLACK}
-#define CA_TAREA_SANA                       (ca){' ', C_BG_GREEN | C_FG_BLACK}
+#define CA_TAREA_INFECTADA_JUGA             (ca){' ', C_BG_BLUE | C_FG_BLUE}
+#define CA_TAREA_INFECTADA_JUGB             (ca){' ', C_BG_RED | C_FG_RED}
+#define CA_TAREA_SANA                       (ca){' ', C_BG_GREEN | C_FG_GREEN}
 
 #define CA_PAGINA_MAPEADA_JUGA              (ca){'A', C_BG_GREEN | C_FG_BLACK}
 #define CA_PAGINA_MAPEADA_JUGB              (ca){'B', C_BG_GREEN | C_FG_BLACK}

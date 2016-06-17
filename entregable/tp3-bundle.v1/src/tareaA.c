@@ -32,12 +32,12 @@ void task() {
   syscall_donde(pos);
   unsigned int* yo = (unsigned int*)(0x08000000);
   unsigned int* otro = (unsigned int*)(0x08000000+0x1000);
+  syscall_soy(JUGA);
   while(1) {
-      syscall_soy(JUGA);
     for(y=pos[1];y<44;y++) {
       for(x=pos[0];x<80;x++) {
           syscall_mapear(x,y);
-          
+
           for(i=0;i<1024;i++) otro[i] = yo[i];
       }
     }

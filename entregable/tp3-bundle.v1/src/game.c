@@ -96,16 +96,14 @@ void game_lanzar(unsigned int jugador) {
 
 void game_soy(unsigned int yoSoy) {
     tarea* actual = sched_info_tarea_actual();
+    actual->virus = yoSoy;
     if(es_jugador(yoSoy)) {
         if(es_jugador(sched_info_queue_actual()->jug)) {
             screen_infectar_infectadora(yoSoy, actual->pos_x, actual->pos_y);
         }
         else {
             screen_infectar_sana(yoSoy, actual->pos_x, actual->pos_y);
-
         }
-
-        sched_infectar(yoSoy);
         screen_actualizar_puntajes();
     }
 }

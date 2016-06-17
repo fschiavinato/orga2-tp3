@@ -164,17 +164,17 @@ unsigned char* sched_matar_tarea_actual(unsigned int* info) {
     return res;
 }
 
-void sched_infectar(int jug) {
-    sched_info_tarea_actual()->virus = jug;
-}
-
-unsigned int sched_infectados(int jug) {
+unsigned int sched_infectados(unsigned int jug) {
     int i, j;
     unsigned int cant = 0;
-    for(i = 0; i < NUM_QUEUES; i++)
-        for(j = 0; j < run_queues[i].cant; i++)
-            if(run_queues[i].tareas[j].viva == TRUE && run_queues[i].tareas[j].virus == jug)
+    for(i = 0; i < NUM_QUEUES; i++) {
+        for(j = 0; j < run_queues[i].cant; j++) {
+            if(run_queues[i].tareas[j].viva == TRUE && run_queues[i].tareas[j].virus == jug) {
                 cant++;
+            }
+        }
+    }
+
     return cant;
 }
 

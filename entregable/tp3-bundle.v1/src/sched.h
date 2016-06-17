@@ -40,9 +40,7 @@ tarea* sched_info_tarea_actual();
 
 queue* sched_info_queue_actual();
 
-void sched_infectar(int jug);
-
-unsigned int sched_infectados(int jug);
+unsigned int sched_infectados(unsigned int jug);
 
 unsigned char* sched_idle();
 

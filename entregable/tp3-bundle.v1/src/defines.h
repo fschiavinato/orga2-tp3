@@ -174,6 +174,30 @@
 #define SCHED_QUEUE_IDX_JUGA                1
 #define SCHED_QUEUE_IDX_JUGB                2
 
+/* Debug */
+/* -------------------------------------------------------------------------- */
+
+#define DEBUG_INFO_CR4_IDX                  0
+#define DEBUG_INFO_CR3_IDX                  1
+#define DEBUG_INFO_CR2_IDX                  2
+#define DEBUG_INFO_CR0_IDX                  3
+#define DEBUG_INFO_GS_IDX                   4
+#define DEBUG_INFO_FS_IDX                   5
+#define DEBUG_INFO_ES_IDX                   6
+#define DEBUG_INFO_DS_IDX                   7
+#define DEBUG_INFO_EDI_IDX                  8
+#define DEBUG_INFO_ESI_IDX                  9
+#define DEBUG_INFO_EBP_IDX                  10
+#define DEBUG_INFO_EBX_IDX                  12
+#define DEBUG_INFO_EDX_IDX                  13
+#define DEBUG_INFO_ECX_IDX                  14
+#define DEBUG_INFO_EAX_IDX                  15
+#define DEBUG_INFO_EIP_IDX                  16
+#define DEBUG_INFO_CS_IDX                   17
+#define DEBUG_INFO_EFLAGS_IDX               18
+#define DEBUG_INFO_ESP_IDX                  19
+#define DEBUG_INFO_SS_IDX                   20
+
 /* Juego */
 /* -------------------------------------------------------------------------- */
 

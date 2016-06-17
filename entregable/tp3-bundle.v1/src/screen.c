@@ -130,13 +130,13 @@ void screen_mapa_imprimir_sincar(const ca* ch, unsigned int x, unsigned int y) {
 
 void screen_ubicar_debajo_cursores(const ca* ch, unsigned int x, unsigned int y) {
     int i = 0;
-    for(; i < CANT_JUGADORES; i++) {
+    for(i = 0; i < CANT_JUGADORES; i++) {
         if(visual_jugadores[i].cursor.posicion.x == x && visual_jugadores[i].cursor.posicion.y == y) {
             visual_jugadores[i].cursor.abajo.c = ch->c;
             visual_jugadores[i].cursor.abajo.a = ch->a;
         }
     }
-    for(; i < MAX_NUM_TAREAS; i++) {
+    for(i = 0; i < MAX_NUM_TAREAS; i++) {
         if(cursores_paginas[i].posicion.x == x && cursores_paginas[i].posicion.y == y) {
             cursores_paginas[i].abajo.c = ch->c;
             cursores_paginas[i].abajo.a = ch->a;
@@ -177,6 +177,7 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 
 void print_int_sinattr(unsigned int n, unsigned int x, unsigned int y) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+
     if( n > 9 ) {
       int a = n / 10;
       n -= 10 * a;
@@ -256,7 +257,6 @@ void screen_actualizar_puntajes() {
         p[visual_jugadores[i].marcador.y][visual_jugadores[i].marcador.x+1].c = ' ';
         print_int_sinattr(puntos, visual_jugadores[i].marcador.x+1, visual_jugadores[i].marcador.y);
     }
-
 }
 
 void screen_actualizar_reloj(unsigned int queue_idx, unsigned int tarea_idx, unsigned int estado_reloj) {
@@ -303,7 +303,7 @@ void screen_quitar_cursor(cursor* cur) {
         screen_mapa_imprimir(&cur->abajo, cur->posicion.x, cur->posicion.y);
     }
     else {
-        screen_mapa_imprimir(&cur_misma_pos->visible, cur->posicion.x, cur->posicion.y);
+        screen_mapa_imprimir_sinattr(&cur_misma_pos->visible, cur->posicion.x, cur->posicion.y);
     }
     cur->en_mapa = FALSE;
 }
@@ -311,20 +311,23 @@ void screen_quitar_cursor(cursor* cur) {
 void screen_ubicar_cursor(cursor* cur, unsigned int x, unsigned int y) {
     x %= ANCHO_MAPA;
     y %= ALTO_MAPA;
+    cur->posicion.x = x;
+    cur->posicion.y = y;
+
     cursor* cur_misma_pos = cursor_distinto_misma_posicion(cur);
 
     if(cur_misma_pos == NULL) {
         cur->abajo.c = screen_mapa_obtener(x, y)->c;
         cur->abajo.a = screen_mapa_obtener(x, y)->a;
-        cur->visible.a = screen_mapa_obtener(x, y)->a;
+        cur->visible.a = cur->visible.a | C_GET_BG(screen_mapa_obtener(x, y)->a);
     }
     else {
+      breakpoint();
         cur->abajo.c = cur_misma_pos->abajo.c;
         cur->abajo.a = cur_misma_pos->abajo.a;
         cur->visible.a = cur_misma_pos->visible.a;
     }
-    cur->posicion.x = x;
-    cur->posicion.y = y;
+
     cur->en_mapa = TRUE;
     screen_mapa_imprimir(&cur->visible, cur->posicion.x, cur->posicion.y);
 }
@@ -423,76 +426,92 @@ void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
     //         | cr3     | 1
     //         | cr2     | 2
     //         | cr0     | 3
-    //         | ss      | 4
-    //         | gs      | 5
-    //         | fs      | 6
-    //         | es      | 7
-    //         | ds      | 8
-    //         | EDI     | 9
-    //         | ESI     | 10
-    //         | EBP0    | 11
-    //         | ESP0    | 12
-    //         | EBX     | 13
-    //         | EDX     | 14
-    //         | ECX     | 15
-    //         | EAX     | 16
-    //         | EIP     | 17
-    //         | CS      | 18
-    //         | EFLAGS  | 19
-    //         | ESP     | 20
-    //         | SS      | 21
+    //         | gs      | 4
+    //         | fs      | 5
+    //         | es      | 6
+    //         | ds      | 7
+    //         | EDI     | 8
+    //         | ESI     | 9
+    //         | EBP0    | 10
+    //         | ESP0    | 11
+    //         | EBX     | 12
+    //         | EDX     | 13
+    //         | ECX     | 14
+    //         | EAX     | 15
+    //         | EIP     | 16
+    //         | CS      | 17
+    //         | EFLAGS  | 18
+    //         | ESP     | 19
+    //         | SS      | 20
+
+
 
     print("eax", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[16], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EAX_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY, DEBUG_REGISTER_COLOR.a);
+
     print("ebx", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 1*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[13], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 1*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EBX_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 1*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("ecx", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 2*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[15], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 2*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_ECX_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 2*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("edx", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 3*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[14], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 3*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EDX_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 3*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("esi", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 4*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[10], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 4*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EBX_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 4*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("edi", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 5*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[9], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 5*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EDI_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 5*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("ebp", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 6*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[11], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 6*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EBP_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 6*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("esp", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 7*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[20], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 7*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_ESP_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 7*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("eip", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 8*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[17], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 8*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EIP_IDX], 8, DEBUG_COL1_OFFSETX + 4, DEBUG_COL1_OFFSETY + 8*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("cs", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[18], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_CS_IDX], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("ds", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 10*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[8], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 10*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_DS_IDX], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 10*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("es", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 11*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[7], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 11*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_ES_IDX], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 11*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("fs", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 12*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[6], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 12*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_FS_IDX], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 12*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("gs", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 13*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[5], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 13*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_GS_IDX], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 13*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("ss", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 14*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[21], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 14*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_SS_IDX], 4, DEBUG_COL1_OFFSETX + 3, DEBUG_COL1_OFFSETY + 14*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+
     print("eflags", DEBUG_COL1_OFFSETX, DEBUG_COL1_OFFSETY + 15*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[19], 8, DEBUG_COL1_OFFSETX + 7, DEBUG_COL1_OFFSETY + 15*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_EFLAGS_IDX], 8, DEBUG_COL1_OFFSETX + 7, DEBUG_COL1_OFFSETY + 15*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
 
     print("cr0", DEBUG_COL2_OFFSETX, DEBUG_COL2_OFFSETY, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[3], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_CR0_IDX], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY, DEBUG_REGISTER_COLOR.a);
 
     print("cr2", DEBUG_COL2_OFFSETX, DEBUG_COL2_OFFSETY + 1*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[2], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY + 1*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_CR2_IDX], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY + 1*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
 
     print("cr3", DEBUG_COL2_OFFSETX, DEBUG_COL2_OFFSETY + 2*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[1], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY + 2*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_CR3_IDX], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY + 2*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
 
     print("cr4", DEBUG_COL2_OFFSETX, DEBUG_COL2_OFFSETY + 3*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(info[0], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY + 3*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(info[DEBUG_INFO_CR4_IDX], 8, DEBUG_COL2_OFFSETX + 4, DEBUG_COL1_OFFSETY + 3*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
 
     print("STACK", DEBUG_COL2_OFFSETX, DEBUG_COL2_OFFSETY + 8*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_TITLE_COLOR.a);
-    print_hex(((unsigned char*)info[20])[0], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
-    print_hex(((unsigned char*)info[20])[0], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+1, DEBUG_REGISTER_COLOR.a);
-    print_hex(((unsigned char*)info[20])[0], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+2, DEBUG_REGISTER_COLOR.a);
-    print_hex(((unsigned char*)info[20])[0], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+3, DEBUG_REGISTER_COLOR.a);
-    print_hex(((unsigned char*)info[20])[0], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+4, DEBUG_REGISTER_COLOR.a);
+    print_hex(((unsigned char*)(info[DEBUG_INFO_ESP_IDX]))[0], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS, DEBUG_REGISTER_COLOR.a);
+    print_hex(((unsigned char*)(info[DEBUG_INFO_ESP_IDX]))[1], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+1, DEBUG_REGISTER_COLOR.a);
+    print_hex(((unsigned char*)(info[DEBUG_INFO_ESP_IDX]))[2], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+2, DEBUG_REGISTER_COLOR.a);
+    print_hex(((unsigned char*)(info[DEBUG_INFO_ESP_IDX]))[3], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+3, DEBUG_REGISTER_COLOR.a);
+    print_hex(((unsigned char*)(info[DEBUG_INFO_ESP_IDX]))[4], 8, DEBUG_COL2_OFFSETX, DEBUG_COL1_OFFSETY + 9*DEBUG_ESPACIO_ENTRADAS+4, DEBUG_REGISTER_COLOR.a);
 
 
  }
