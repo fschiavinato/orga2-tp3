@@ -277,7 +277,7 @@ void screen_actualizar_reloj(unsigned int queue_idx, unsigned int tarea_idx, uns
 cursor* cursor_distinto_misma_posicion(cursor* cur) {
   unsigned int i = 0;
   cursor *res = NULL;
-  for( i = 0; i < CANT_JUGADORES && res != NULL; i++)
+  for( i = 0; i < CANT_JUGADORES && res == NULL; i++)
       if(visual_jugadores[i].cursor.posicion.x == cur->posicion.x &&
           visual_jugadores[i].cursor.posicion.y == cur->posicion.y &&
           &visual_jugadores[i].cursor != cur &&
@@ -285,7 +285,7 @@ cursor* cursor_distinto_misma_posicion(cursor* cur) {
         )
           res = &visual_jugadores[i].cursor;
 
-  for(i = 0; i < MAX_NUM_TAREAS && res != NULL; i++)
+  for(i = 0; i < MAX_NUM_TAREAS && res == NULL; i++)
       if(cursores_paginas[i].posicion.x == cur->posicion.x &&
         cursores_paginas[i].posicion.y == cur->posicion.y &&
         &cursores_paginas[i] != cur &&
@@ -320,9 +320,9 @@ void screen_ubicar_cursor(cursor* cur, unsigned int x, unsigned int y) {
         cur->abajo.c = screen_mapa_obtener(x, y)->c;
         cur->abajo.a = screen_mapa_obtener(x, y)->a;
         cur->visible.a = cur->visible.a | C_GET_BG(screen_mapa_obtener(x, y)->a);
+
     }
     else {
-      breakpoint();
         cur->abajo.c = cur_misma_pos->abajo.c;
         cur->abajo.a = cur_misma_pos->abajo.a;
         cur->visible.a = cur_misma_pos->visible.a;
