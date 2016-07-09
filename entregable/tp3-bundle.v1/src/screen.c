@@ -381,8 +381,10 @@ void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
 
  void screen_mostrar_consola_debug(unsigned int* info) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-    for(int i = 0; i < DEBUG_ALTO; i++) {
-      for(int j = 0; j < DEBUG_ANCHO; j++) {
+    int i;
+    for( i = 0; i < DEBUG_ALTO; i++) {
+        int j;
+      for( j = 0; j < DEBUG_ANCHO; j++) {
         backup_pantalla[i][j].c = p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c;
         backup_pantalla[i][j].a = p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].a;
         p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c = CA_MAPA.c;
@@ -390,33 +392,38 @@ void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
       }
     }
     // Imprimimos el marco.
-    for(int i = 0; i < DEBUG_MARCO_INF_SIZE; i++) {
-      for(int j = 0; j < DEBUG_ANCHO; j++) {
+    for( i = 0; i < DEBUG_MARCO_INF_SIZE; i++) {
+        int j;
+      for( j = 0; j < DEBUG_ANCHO; j++) {
         p[DEBUG_OFFSETY + DEBUG_ALTO - 1 + i][DEBUG_OFFSETX + j].c = DEBUG_MARCO_COLOR.c;
         p[DEBUG_OFFSETY + DEBUG_ALTO - 1 + i][DEBUG_OFFSETX + j].a = DEBUG_MARCO_COLOR.a;
       }
     }
-    for(int i = 0; i < DEBUG_MARCO_SUP_SIZE; i++) {
-      for(int j = 0; j < DEBUG_ANCHO; j++) {
+    for( i = 0; i < DEBUG_MARCO_SUP_SIZE; i++) {
+        int j;
+      for( j = 0; j < DEBUG_ANCHO; j++) {
         p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c = DEBUG_MARCO_COLOR.c;
         p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].a = DEBUG_MARCO_COLOR.a;
       }
     }
-    for(int i = 0; i < DEBUG_ALTO; i++) {
-      for(int j = 0; j < DEBUG_MARCO_DER_SIZE; j++) {
+    for( i = 0; i < DEBUG_ALTO; i++) {
+        int j;
+      for( j = 0; j < DEBUG_MARCO_DER_SIZE; j++) {
         p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + DEBUG_ANCHO - 1 - j].c = DEBUG_MARCO_COLOR.c;
         p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + DEBUG_ANCHO - 1 - j].a = DEBUG_MARCO_COLOR.a;
       }
     }
-    for(int i = 0; i < DEBUG_ALTO; i++) {
-      for(int j = 0; j < DEBUG_MARCO_IZQ_SIZE; j++) {
+    for( i = 0; i < DEBUG_ALTO; i++) {
+        int j;
+      for( j = 0; j < DEBUG_MARCO_IZQ_SIZE; j++) {
         p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c = DEBUG_MARCO_COLOR.c;
         p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].a = DEBUG_MARCO_COLOR.a;
       }
     }
 
-    for(int i = 0; i < DEBUG_TITULO_SIZE; i++) {
-      for(int j = 0; j < DEBUG_ANCHO - 2; j++) {
+    for( i = 0; i < DEBUG_TITULO_SIZE; i++) {
+        int j;
+      for(j = 0; j < DEBUG_ANCHO - 2; j++) {
         p[DEBUG_OFFSETY + 1 + i][DEBUG_OFFSETX + 1 + j].c = DEBUG_TITULO_COLOR.c;
         p[DEBUG_OFFSETY + 1 + i][DEBUG_OFFSETX + 1 + j].a = DEBUG_TITULO_COLOR.a;
       }
@@ -518,8 +525,10 @@ void screen_mapa_imprimir_tarea_sana(unsigned int x, unsigned int y) {
 
  void screen_ocultar_consola_debug() {
    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
-   for(int i = 0; i < DEBUG_ALTO; i++) {
-     for(int j = 0; j < DEBUG_ANCHO; j++) {
+   int i;
+   for( i = 0; i < DEBUG_ALTO; i++) {
+    int j;
+     for(j = 0; j < DEBUG_ANCHO; j++) {
        p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].c = backup_pantalla[i][j].c;
        p[DEBUG_OFFSETY + i][DEBUG_OFFSETX + j].a = backup_pantalla[i][j].a;
      }

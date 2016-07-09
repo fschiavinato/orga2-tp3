@@ -45,8 +45,12 @@ void task() {
   }
 }
 
+ 
+
+
 LS_INLINE unsigned int newrand(unsigned int *val) {
         unsigned int rr = RAND_a * ((unsigned int)*val) + RAND_c;
         *val = (unsigned int) ( rr % RAND_m);
         return *val;
 }
+//es un random

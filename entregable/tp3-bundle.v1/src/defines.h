@@ -31,7 +31,7 @@
 #define MAX_NUM_TAREAS_SANAS                15
 #define MAX_NUM_TAREAS_JUGA                 5
 #define MAX_NUM_TAREAS_JUGB                 5
-#define MAX_NUM_TAREAS                      MAX_NUM_TAREAS_SANAS+MAX_NUM_TAREAS_JUGA+MAX_NUM_TAREAS_JUGB
+#define MAX_NUM_TAREAS                      MAX_NUM_TAREAS_SANAS+MAX_NUM_TAREAS_JUGA+MAX_NUM_TAREAS_JUGB //25
 #define CANT_JUGADORES                      2
 #define CANT_VIDAS                          20
 #define CANT_ESTADOS_RELOJ                  4
@@ -166,10 +166,10 @@
 
 #define QUANTUM                             1
 #define NUM_QUEUES                          3
-#define TS_IDX_IDLE                         MAX_NUM_TAREAS
+#define TS_IDX_IDLE                         MAX_NUM_TAREAS//25
 #define TS_START_IDX_SANAS                  0
-#define TS_START_IDX_JUGA                   MAX_NUM_TAREAS_SANAS
-#define TS_START_IDX_JUGB                   MAX_NUM_TAREAS_SANAS + MAX_NUM_TAREAS_JUGA
+#define TS_START_IDX_JUGA                   MAX_NUM_TAREAS_SANAS//15
+#define TS_START_IDX_JUGB                   MAX_NUM_TAREAS_SANAS + MAX_NUM_TAREAS_JUGA //20
 #define SCHED_QUEUE_IDX_SANAS               0
 #define SCHED_QUEUE_IDX_JUGA                1
 #define SCHED_QUEUE_IDX_JUGB                2
@@ -207,3 +207,5 @@
 #define ID_CODE_JUGB                        0x325
 
 #endif  /* !__DEFINES_H__ */
+
+

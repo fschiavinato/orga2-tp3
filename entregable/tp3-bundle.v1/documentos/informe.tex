@@ -222,7 +222,7 @@ Se establecen los selectores de segmento (ds, es, fs, gs, ss)(todos apuntan al s
 Con estos segmentos seteados, podemos establecer la pila moviendo la base a los reg ebp y esp (direccion pedida por catedra)
 
  Luego se inicializa la pantalla, para ello llamamos a la funcion inicializar_pantalla, que pushea ds, mueve eax al segmento de video,(y a la primera posicion), y mientras el contador ecx lopee(tiene la cantidad de words a pintar de gris), avanzamos eax y por cada 2 bytes llenamos el lugar del color querido (01110000b ; 0111 = grey sin bright, 0000 = black sin bright). Luego popeamos ds y salimos.
- En 
+  
  
    
 Terminamos ejercicio 1
@@ -263,7 +263,7 @@ Terminamos ejercicio 1
 \item	que sea de 32bits
 
 \end{itemize}		
-	EL segsel es el 0x18 por ser el tercero de la gdt, donde esta el descriptor del segmento donde se encuentran las rutinas de atencion de interrupciones.
+	EL segsel es el 0x18 por representar el tercero de la gdt, donde esta el descriptor del segmento donde se encuentran las rutinas de atencion de interrupciones.
 	
 	
 	Cuando se produce una interrupcion, el procesador busca en la istr la idt, va a la Idt y se va a la puerta de esa interrupcion.
@@ -738,24 +738,96 @@ screen_visual_jugador, que para un jugador dado, te da sus atributos (de la estr
 
 Con esto el manejo del juego esta estaticamente cerrado, para que funcione, sin embargo, se necesita de que las interrupciones llamen a estas funciones. Debido a eso, actualizamos las rutinas de interrumpcion de teclado y la de sistema0x66
 
-Modificaciones de la interrupcion de teclado:
+\begin{itemize}
+
+
+\item{Modificaciones de la interrupcion de teclado:}
 
 Cuando se produzca alguna interrupcion que agrege tareas,(las de los shifts), 
 la rutina de interrupcion de teclado de isr llama a game_lanzar. Si se presiona la de las direcciones, se llama a game_mover_cursor(se pasan en ebx, ecx los parametros para llamarla) se mueve 8 para no romper el stack, se llama a fin_intr_pic1 y se vuelve.
 
-Modificaciones de la interrupcion de reloj:
+\item{Modificaciones de la interrupcion de reloj:}
 
 Se llama a proximo_reloj, luego a fin_intr_pic1  para poder recibir otra interrupcion de ser requerido, luego a shed_ts)tarea_actual y luego de tenerla, con su resultado a sched_proxima_tarea, se compara si son iguales, en cuyo caso se termina la interrupcion, o en caso de no serlo, se llama a cambio_contexto para cambiar el contexto y pasar a la proxima tarea),  y se sale.
 
-Modificaciones de la interrupcion de sistema:
+\item{Modificaciones de la interrupcion de sistema:}
 
 Se salvan los registros y se  compara con el valor que significa que la tarea solicita el servicio DONDE, y hace lo mismo conlos servicios SOY y MAPEAR, si alguno de ellos conicide, entonces se llama, respectivamente a game_soy, game_mapear o game_donde y luego popea los registros y sale. 
+
+\end{itemize}
+
+
 
 Con esto queda bien funcional el juego.
 
 
 
+\section{Aclaraciones del Makefile/Generales}
 
+El Makefile fue modificado  de la siguiente manera:
+\begin{itemize}
+
+ \item{Agregamos un archivo (ctx.asm)}
+ 
+ \item{Agregamos  el flag -shared, ya que si no producia errores al compilar las tareas.}
+ 
+ \end{itemize}
 
 \end{document}
+
+Tengo que aclara los randoms de las tareas. Tengo que aclarar el funcionamiento de las funciones de screen mas profundamente
+
+
+
+Descripcion del struct ca, utilizado para manejar la pantalla
+el struct cuenta con un char c y un char a, (dos bytes que sirven para manejar los las posiciones de la memoria de video, siendo uno el modo y el otro el caracter ASCII )
+
+Descripcion del struct pos, que es utilizado para manejar la pantalla.
+El struct cuenta con dos naturales que muestran las poscision en la pantalla.
+
+
+Descripcion del struct cursor, el cual es utilizada para las funciones de la pantalla de juego
+El struct cuenta con:
+ la posicion del cursor en la pantalla(pos de tipo pos )
+ dos elementos de tipo ca, llamados visible y abajo. Aqui guardaremos los datos que son mostrados actualmente por pantalla, asi como el anterior, para asi poder recuperar su valor en caso de ser necesario.(al matar tareas, por ejemplo)
+ un unsigned char, en_mapa, que dice que letra esta mapeada en determinado momento. 
+
+
+
+Descripcion del struct jugador_visual, la cual es utilizada para las funciones que dejan imprimir en pantalla.
+ EL struct cuenta con:
+  el cursor (cursor de tipo cursor), 
+  tres elementos de tipo ca, cursor_pagina_visible, tarea_infectadora, y  tarea_infectada, que corresponden al ca!!  del cursor visible  y de las tareas y nos servira para la infectacion
+  dos elementos de tipo pos, marcador y marcador_vidas
+  un int que nos dice cual jugador es llamado jug.
+
+
+
+Aca terminan las descripciones del struct de screen.
+
+
+Ahora vamos a describir las estructuras que se utilizan en el scheduler
+
+Tenemos la estructura tarea,  con la cual se representan las tareas e la cola del sheduler.
+El struct cuenta con:
+el ts_idx, un short que me dice que idx ts tiene la tarea.
+un byte que me indica si la tarea esta viva  o no
+cuatro naturales que me dicen, el virus que tiene, la posicion( dos naturales x e y) y el estado de su reloj (se usa para ver si cumplio su tiempo en el sheduler)
+
+La estructura ts es una estructura definida en ts.h, la cual es un puntero al esp0 (lease, pila de codigo de nivel de kernel) y se utiliza para reesguardar los datos.
+
+ 
+
+
+
+
+Tenemos la estructura queue, la cual conforma  las colas de las distintas tipos de tareas (lease, A, B, sanas)
+El struct cuenta con:
+cuatro elementos de tipo unsigned int que cuentan la cantidad de elementos de la cola(cant), uno que marca la tarea actual del queue que esta siendo vista por el scheduler, y otro que marca el ts, (ts_start_idx). 
+Un puntero tarea a la tarea correspondiente. 
+
+
+
+
+
 

@@ -7,30 +7,38 @@
 
 #include "sched.h"
 
-
+//Arreglo de queues
 queue run_queues[NUM_QUEUES] = {
     [SCHED_QUEUE_IDX_SANAS] = {
-        MAX_NUM_TAREAS_SANAS,
-        0,
-        TS_START_IDX_SANAS,
+        MAX_NUM_TAREAS_SANAS,//15
+        0,                    // viva = 0 
+        TS_START_IDX_SANAS,//0
         NULL,
-        (tarea[MAX_NUM_TAREAS_SANAS]){}
+        (tarea[MAX_NUM_TAREAS_SANAS]){} // MAX_NUM_TAREAS_SANAS =15
     },
     [SCHED_QUEUE_IDX_JUGA] = {
-        MAX_NUM_TAREAS_JUGA,
+        MAX_NUM_TAREAS_JUGA,//5
         0,
-        TS_START_IDX_JUGA,
+        TS_START_IDX_JUGA,//15
         JUGA,
-        (tarea[MAX_NUM_TAREAS_JUGA]){}
+        (tarea[MAX_NUM_TAREAS_JUGA]){}// MAX_NUM_TAREAS_JUGA =5
     },
     [SCHED_QUEUE_IDX_JUGB] = {
-        MAX_NUM_TAREAS_JUGB,
+        MAX_NUM_TAREAS_JUGB, //5
         0,
-        TS_START_IDX_JUGB,
+        TS_START_IDX_JUGB,//20
         JUGB,
-        (tarea[MAX_NUM_TAREAS_JUGB]){} //no deberia ser tareas[TS_START_IDX_JUGB]
+        (tarea[MAX_NUM_TAREAS_JUGB]){} //MAX_NUM_TAREAS_JUGB =5
     }
 };
+
+/*
+unsigned int cant;
+    unsigned int tarea_actual;
+    unsigned int ts_start_idx;
+    unsigned int jug;
+    tarea* tareas;
+*/
 
 unsigned int current_task_ticks = 0;
 unsigned int current_queue = 0;
@@ -45,20 +53,24 @@ void sched_inicializar() {
     unsigned int y;
     for(; i < MAX_NUM_TAREAS_SANAS; i++, ts_idx++) {
         do {
-            y = rand() % ALTO_MAPA;
-            x = rand() % ANCHO_MAPA;
+            y = rand() % ALTO_MAPA; //genera poscision al azar para posicionar las tareas
+            x = rand() % ANCHO_MAPA; //genera poscision con un random para posicionar las tareas
         } while(!sched_correr_tarea(SCHED_QUEUE_IDX_SANAS, (unsigned char*) DIR_PHY_CODIGO_SANA, x, y));
         screen_mapa_imprimir_tarea_sana(x, y);
     }
 }
 
+//se encarga de que las tareas sanas aparezcan en la pantalla
+
+
 unsigned char* sched_proxima_tarea() {
-    unsigned char* res = ts_tareas[TS_IDX_IDLE].esp0;
+    //unsigned char* res;
+    unsigned char* res = ts_tareas[TS_IDX_IDLE].esp0; //TS_IDX_IDLE =25 no sirve para nada, pude haberle puesto naa
     unsigned int cT = 0, cQ = 0;
     unsigned int iQ;
     unsigned int iT;
 
-    tarea* actual = sched_info_tarea_actual();
+    tarea* actual = sched_info_tarea_actual();// te devuelve el struct tarea de la que se tarea que se venia ejecutando 
     if(actual->viva == TRUE) {
         actual->estado_reloj++;
         actual->estado_reloj %= CANT_ESTADOS_RELOJ;
@@ -72,7 +84,7 @@ unsigned char* sched_proxima_tarea() {
             cQ += (++cT) / (run_queues[iQ].cant + 1);
             cT %= run_queues[iQ].cant + 1;
 
-        } while(cQ <= NUM_QUEUES && run_queues[iQ].tareas[iT].viva == FALSE);
+        } while((cQ <= NUM_QUEUES) && (run_queues[iQ].tareas[iT].viva == FALSE));
 
         if(cQ <= NUM_QUEUES) {
             current_queue = iQ;
@@ -95,6 +107,9 @@ unsigned char* sched_proxima_tarea() {
     }
     return res;
 }
+
+
+//Nos dice la tarea proxima a ejecutar actualizando las colas (y nos devuelve un puntero a su esp0)
 
 struct str_ts* sched_ts_tarea_actual() {
     tarea* t =  sched_info_tarea_actual();
@@ -193,3 +208,4 @@ void srand( unsigned int seed )
 {
     next = seed;
 }
+

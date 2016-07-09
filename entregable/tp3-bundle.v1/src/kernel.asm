@@ -60,9 +60,13 @@ BITS 32
     ; Establecer selectores de segmentos
     mov eax, GDT_IDX_KERNEL_DATA_DESC
     mov ds, eax
+    mov eax, GDT_IDX_KERNEL_DATA_DESC ;banana
     mov es, eax
+    mov eax, GDT_IDX_VIDEO_DESC  ;banana
     mov fs, eax
+    mov eax, GDT_IDX_KERNEL_DATA_DESC ;banana
     mov gs, eax
+    mov eax, GDT_IDX_KERNEL_DATA_DESC ;banana
     mov ss, eax
 
     ; Establecer la base de la pila

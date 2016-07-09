@@ -9,3 +9,4 @@
 \contentsline {subsection}{\numberline {2.5}Ejercicio 5}{9}
 \contentsline {subsection}{\numberline {2.6}Ejercicio 6}{9}
 \contentsline {subsection}{\numberline {2.7}Ejercicio 7}{13}
+\contentsline {section}{\numberline {3}Aclaraciones del Makefile/Generales}{15}
